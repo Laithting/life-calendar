@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>一生日歷小工具</title>
+<meta name="description" content="把一生日歷放到 iPhone 或 Android 的桌面小工具。">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="style.css">
+<style>
+.wpage{max-width:860px}
+.back{color:var(--mark);text-decoration:none;font-size:.9rem}
+.back:hover{text-decoration:underline}
+.tabs{display:inline-flex;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:3px;align-self:flex-start}
+.tabs button{border:0;background:transparent;padding:5px 18px;border-radius:999px;color:var(--muted)}
+.tabs button[aria-selected="true"]{background:var(--ink);color:var(--paper)}
+.steps{margin:0;padding-left:1.4em;display:flex;flex-direction:column;gap:10px;max-width:65ch}
+.steps li{padding-left:.2em}
+.steps b{font-weight:500}
+.code{position:relative;background:var(--paper);border:1px solid var(--line);border-radius:8px;min-width:0}
+.code pre{margin:0;padding:12px;overflow:auto;max-height:260px;font-family:var(--f-num);font-size:.78rem;line-height:1.55;white-space:pre}
+.formula{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:8px 8px 8px 12px}
+.formula .fl{font-size:.75rem;color:var(--muted);grid-column:1 / -1;margin-bottom:-4px}
+.formula code{font-family:var(--f-num);font-size:.8rem;overflow-wrap:anywhere;min-width:0}
+.flist{display:flex;flex-direction:column;gap:8px}
+.preview{display:flex;gap:12px;flex-wrap:wrap}
+.mock{background:#10162B;color:#E6EAF5;border-radius:22px;padding:14px 16px;display:flex;flex-direction:column;gap:3px;width:158px;min-height:158px;font-size:11px}
+.mock span{flex:none}
+.mock .mt{color:#8E97B3}
+.mock .mw{font-size:24px;font-weight:700;line-height:1.2}
+.mock .mb{height:6px;border-radius:3px;background:#2B3456;overflow:hidden;margin:4px 0 2px}
+.mock .mb i{display:block;height:100%;background:#8796D8}
+.mock .yb i{background:#F0B84E}
+.mock .mono{font-family:var(--f-num)}
+.mock.med{width:338px;max-width:100%;flex-direction:row;justify-content:space-between;align-items:center}
+.mock .yrs{display:grid;grid-template-columns:repeat(10,11px);gap:2px}
+.mock .yrs i{width:11px;height:11px;border-radius:2px;box-shadow:inset 0 0 0 1px #2B3456}
+.mock .yrs i.l{background:#8796D8;box-shadow:none}
+.mock .yrs i.n{background:#F0B84E;box-shadow:none}
+@media (max-width:420px){.mock .yrs{grid-template-columns:repeat(10,8px)}.mock .yrs i{width:8px;height:8px}}
+</style>
+<script>
+  try{ var p = JSON.parse(localStorage.getItem('lc.prefs') || '{}'); if (p.theme === 'light' || p.theme === 'dark') document.documentElement.setAttribute('data-theme', p.theme); }catch(e){}
+</script>
+</head>
+<body>
+<div class="wrap wpage">
+  <a class="back" href="./" id="back">← 回到一生日歷</a>
+  <header class="top">
+    <div class="brand">
+      <h1 id="title">桌面小工具</h1>
+      <div class="today" id="sub">把格子放到手機桌面，每次解鎖都看得到。</div>
+    </div>
+    <div class="settings">
+      <div class="field"><label for="wBirth" id="lBirth">生日</label><input type="date" id="wBirth"></div>
+      <div class="field"><label for="wLife" id="lLife">預期壽命（歲）</label><input type="number" id="wLife" min="40" max="120"></div>
+      <div class="tbtns"><button type="button" class="ghost" id="langBtn">English</button></div>
+    </div>
+  </header>
+  <p class="example" id="wNote" hidden></p>
+
+  <div class="preview" aria-hidden="true">
+    <div class="mock" id="mockSmall"></div>
+    <div class="mock med" id="mockMed"></div>
+  </div>
+
+  <div class="tabs" role="tablist">
+    <button type="button" role="tab" id="tabIos" aria-selected="true" aria-controls="paneIos">iPhone</button>
+    <button type="button" role="tab" id="tabAnd" aria-selected="false" aria-controls="paneAnd">Android</button>
+  </div>
+
+  <section class="panel" id="paneIos" role="tabpanel" aria-labelledby="tabIos">
+    <h3 id="iosH">iPhone · Scriptable</h3>
+    <ol class="steps" id="iosSteps"></ol>
+    <div class="btnrow"><button type="button" class="primary" id="copyScript">複製程式碼</button><span class="note" id="copyMsg" aria-live="polite"></span></div>
+    <div class="code"><pre id="scriptPre"></pre></div>
+    <p class="note" id="iosTip"></p>
+  </section>
+
+  <section class="panel" id="paneAnd" role="tabpanel" aria-labelledby="tabAnd" hidden>
+    <h3 id="andH">Android · KWGT</h3>
+    <ol class="steps" id="andSteps"></ol>
+    <div class="flist" id="formulas"></div>
+    <p class="note" id="andTip"></p>
+  </section>
+
+  <footer id="foot"></footer>
+</div>
+
+<script>
+(function(){
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const SITE = 'https://laithting.github.io/life-calendar/';
+  const store = { get(k, d){ try{ const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); }catch(e){ return d; } }, set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} } };
+  const prefs = Object.assign({lang: /^zh/i.test(navigator.language || 'zh') ? 'zh' : 'en'}, store.get('lc.prefs', {}));
+  const data = store.get('lc.data', {}) || {};
+  let birth = /^\d{4}-\d{2}-\d{2}$/.test(data.birth || '') ? data.birth : '';
+  let life = Number(data.life) >= 40 && Number(data.life) <= 120 ? Number(data.life) : 80;
+  const EXAMPLE = '1996-05-20';
+  let template = '';
+
+  const L = {
+    zh: {
+      title:'桌面小工具', doc:'一生日歷小工具', sub:'把格子放到手機桌面，每次解鎖都看得到。', back:'← 回到一生日歷', birth:'生日', life:'預期壽命（歲）', lang:'English',
+      note:'還沒有填生日，下面先用示例生日 1996/5/20。填入你的生日，程式碼和公式會跟著更新。',
+      ios:[
+        '從 App Store 安裝免費的 <a href="https://apps.apple.com/app/scriptable/id1405459188" target="_blank" rel="noopener">Scriptable</a>。',
+        '按下面的<b>「複製程式碼」</b>。程式碼裡已經填好你的生日和壽命。',
+        '打開 Scriptable，點右上角的 <b>＋</b>，貼上程式碼，再點最上方把名稱改成<b>「一生日歷」</b>，按 Done。',
+        '回到主畫面，長按空白處，點左上角的<b>「編輯」→「加入小工具」</b>，找到 Scriptable，選小、中或大尺寸，加入主畫面。',
+        '長按剛加入的小工具，點<b>「編輯小工具」</b>，Script 選<b>「一生日歷」</b>。',
+        '鎖定畫面也可以放：長按鎖定畫面 →「自訂」→ 鎖定畫面 → 點小工具區 → Scriptable，同樣選「一生日歷」。'
+      ],
+      iosTip:'點小工具會打開一生日歷網站。之後想改生日，不用重貼程式碼：在「編輯小工具」的 Parameter 欄填「1996-05-20,80」這種格式就好。小工具大約每天更新一次，時間由 iOS 決定。',
+      copy:'複製程式碼', copied:'已複製，可以到 Scriptable 貼上了。', copyFail:'無法自動複製。請在下面的程式碼上長按，全選後複製。', copyLabel:'複製',
+      and:[
+        '從 Google Play 安裝免費的 <a href="https://play.google.com/store/apps/details?id=org.kustom.widget" target="_blank" rel="noopener">KWGT</a>。免費版就能自己做小工具。',
+        '長按主畫面空白處，點<b>「小工具」</b>，找到 KWGT，把 <b>4×2</b> 的小工具拖到主畫面。',
+        '點一下這個空白的小工具，進入 KWGT 編輯器，選<b>建立新的空白小工具</b>。',
+        '在<b>「項目」</b>分頁按 <b>＋</b>，加入<b>「文字」</b>。點進這個文字，在「文字」欄位按右邊的計算機圖示，貼上下面第一段公式。用同樣的方法加入其他幾段文字。',
+        '想要進度條：按 <b>＋</b> 加入<b>「進度」</b>，把模式設成<b>自訂</b>，等級（Level）貼上「進度條」那段公式，最大值填 100。',
+        '回到最上層，在<b>「觸控」</b>分頁加入動作<b>「開啟連結」</b>，網址填 ' + SITE + '，點小工具就會打開網站。',
+        '按右上角的儲存圖示，回到主畫面就會看到小工具。'
+      ],
+      andTip:'各個選項的名稱可能依 KWGT 版本、手機語言略有不同。KWGT 會依時間自動更新這些數字。',
+      f:[['週數', w => `第 ${w} 週`], ['一生進度', p => `一生 ${p}%`], ['剩下的週數', l => `還有 ${l} 週`], ['今天剩下的時間', x => `今天還剩 ${x}`], ['進度條（Level）', p => p]],
+      foot:'小工具只用到你的生日和預期壽命，都寫在你自己的手機裡。',
+      mt:'一生日歷', mw:n => `第 ${n} 週`, ml:p => `一生 ${p}`, mleft:n => `還有 ${n} 週`, my:(y, p) => `${y} 年 ${p}`
+    },
+    en: {
+      title:'Home-screen widget', doc:'Life Calendar Widget', sub:'Put the grid on your home screen so you see it every time you unlock.', back:'← Back to Life Calendar', birth:'Birthday', life:'Life expectancy', lang:'中文',
+      note:'No birthday saved yet, so this uses the example birthday May 20, 1996. Enter yours and the code and formulas update.',
+      ios:[
+        'Install the free <a href="https://apps.apple.com/app/scriptable/id1405459188" target="_blank" rel="noopener">Scriptable</a> app from the App Store.',
+        'Tap <b>Copy code</b> below. Your birthday and life expectancy are already filled in.',
+        'Open Scriptable, tap <b>+</b> in the top right, paste the code, rename the script <b>Life Calendar</b> at the top, and tap Done.',
+        'On your home screen, long-press an empty spot, tap <b>Edit → Add Widget</b>, find Scriptable, pick small, medium or large, and add it.',
+        'Long-press the new widget, tap <b>Edit Widget</b>, and set Script to <b>Life Calendar</b>.',
+        'It works on the lock screen too: long-press the lock screen → Customize → Lock Screen → tap the widget area → Scriptable, then pick the same script.'
+      ],
+      iosTip:'Tapping the widget opens the Life Calendar site. To change your birthday later, you do not need to paste the code again: in Edit Widget, set Parameter to something like "1996-05-20,80". iOS decides when the widget refreshes, usually about once a day.',
+      copy:'Copy code', copied:'Copied. Paste it into Scriptable.', copyFail:'Could not copy automatically. Long-press the code below, select all, and copy.', copyLabel:'Copy',
+      and:[
+        'Install the free <a href="https://play.google.com/store/apps/details?id=org.kustom.widget" target="_blank" rel="noopener">KWGT</a> app from Google Play. The free version lets you build your own widget.',
+        'Long-press an empty spot on your home screen, tap <b>Widgets</b>, find KWGT, and drag the <b>4×2</b> widget onto the screen.',
+        'Tap the empty widget to open the KWGT editor and choose to <b>create a new blank widget</b>.',
+        'On the <b>Items</b> tab, tap <b>+</b> and add <b>Text</b>. Open it, tap the calculator icon next to the Text field, and paste the first formula below. Add the other lines the same way.',
+        'For a progress bar: tap <b>+</b>, add <b>Progress</b>, set the mode to <b>Custom</b>, paste the progress-bar formula into Level, and set the maximum to 100.',
+        'Back at the top level, on the <b>Touch</b> tab add the action <b>Open Link</b> with ' + SITE + ' so tapping the widget opens the site.',
+        'Tap the save icon in the top right. The widget appears on your home screen.'
+      ],
+      andTip:'Option names can differ slightly by KWGT version and phone language. KWGT updates the numbers on its own as time passes.',
+      f:[['Week number', w => `Week ${w}`], ['Life progress', p => `${p}% of life`], ['Weeks left', l => `${l} weeks left`], ['Time left today', x => `${x} left today`], ['Progress bar (Level)', p => p]],
+      foot:'The widget only uses your birthday and life expectancy, and both stay on your own phone.',
+      mt:'Life Calendar', mw:n => `Week ${n}`, ml:p => `Life ${p}`, mleft:n => `${n} weeks left`, my:(y, p) => `${y} ${p}`
+    }
+  };
+  const t = () => L[prefs.lang] || L.zh;
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+  function parts(){
+    const b = birth || EXAMPLE;
+    const [y, m, d] = b.split('-').map(Number);
+    const dy = y + life;
+    const dd = Math.min(d, new Date(dy, m, 0).getDate());
+    return {y, m, d, dy, dd, b};
+  }
+  function script(){
+    if (!template) return '';
+    const p = parts();
+    return template
+      .replace(/^const BIRTH = .*\/\/ @birth$/m, `const BIRTH = "${p.b}"; // @birth`)
+      .replace(/^const LIFE = .*\/\/ @life$/m, `const LIFE = ${life}; // @life`)
+      .replace(/^const LANG = .*\/\/ @lang$/m, `const LANG = "${prefs.lang}"; // @lang`);
+  }
+  function formulas(){
+    const p = parts();
+    const B = `df(S, ${p.y}y${p.m}M${p.d}d0h0m0s)`;
+    const D = `df(S, ${p.dy}y${p.m}M${p.dd}d0h0m0s)`;
+    const f = t().f;
+    return [
+      [f[0][0], f[0][1](`$mu(floor, (df(S) - ${B}) / 604800) + 1$`)],
+      [f[1][0], f[1][1](`$mu(round, (df(S) - ${B}) / (${D} - ${B}) * 100, 1)$`)],
+      [f[2][0], f[2][1](`$mu(floor, (${D} - df(S)) / 604800)$`)],
+      [f[3][0], f[3][1]('$tf(0h0m0sa1d, hh:mm)$')],
+      [f[4][0], f[4][1](`$(df(S) - ${B}) / (${D} - ${B}) * 100$`)]
+    ];
+  }
+  function stats(){
+    const p = parts();
+    const DAY = 864e5, dn = d => Math.round(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / DAY);
+    const b = new Date(p.y, p.m - 1, p.d), death = new Date(p.dy, p.m - 1, p.dd), now = new Date();
+    const week = Math.floor((dn(now) - dn(b)) / 7) + 1;
+    const left = Math.max(0, Math.round((dn(death) - dn(b)) / 7 - week + 1));
+    const lp = Math.max(0, Math.min(1, (now - b) / (death - b)));
+    let age = now.getFullYear() - p.y; if (now < new Date(now.getFullYear(), p.m - 1, p.d)) age--;
+    const y0 = new Date(now.getFullYear(), 0, 1), y1 = new Date(now.getFullYear() + 1, 0, 1);
+    return {week, left, lp, age: Math.max(0, age), yp: (now - y0) / (y1 - y0), year: now.getFullYear()};
+  }
+  const nf = n => n.toLocaleString(prefs.lang === 'zh' ? 'zh-TW' : 'en-US');
+
+  function render(){
+    const s = t();
+    document.documentElement.lang = prefs.lang === 'zh' ? 'zh-Hant-TW' : 'en';
+    document.title = s.doc;
+    $('title').textContent = s.title; $('sub').textContent = s.sub; $('back').textContent = s.back;
+    $('lBirth').textContent = s.birth; $('lLife').textContent = s.life; $('langBtn').textContent = s.lang;
+    $('wNote').textContent = s.note; $('wNote').hidden = !!birth;
+    $('iosSteps').innerHTML = s.ios.map(x => `<li>${x}</li>`).join('');
+    $('andSteps').innerHTML = s.and.map(x => `<li>${x}</li>`).join('');
+    $('iosTip').textContent = s.iosTip; $('andTip').textContent = s.andTip; $('foot').textContent = s.foot;
+    $('copyScript').textContent = s.copy;
+    $('scriptPre').textContent = script();
+    $('formulas').innerHTML = formulas().map((f, i) => `<div class="formula"><span class="fl">${esc(f[0])}</span><code id="fx${i}">${esc(f[1])}</code><button type="button" class="ghost sm" data-copy="fx${i}">${esc(s.copyLabel)}</button></div>`).join('');
+    const st = stats();
+    const pct = (p, d) => (p * 100).toFixed(d) + '%';
+    const small = `<span class="mt">${esc(s.mt)}</span><span class="mw">${esc(s.mw(nf(st.week)))}</span><span class="mb"><i style="width:${(st.lp*100).toFixed(1)}%"></i></span><span class="mono">${esc(s.ml(pct(st.lp, 1)))}</span><span class="mt">${esc(s.mleft(nf(st.left)))}</span><span class="mb yb" style="height:4px"><i style="width:${(st.yp*100).toFixed(1)}%"></i></span><span class="mt">${esc(s.my(st.year, pct(st.yp, 0)))}</span>`;
+    $('mockSmall').innerHTML = small;
+    const n = Math.max(life, st.age + 1);
+    let yrs = '';
+    for (let i = 0; i < n; i++) yrs += `<i class="${i < st.age ? 'l' : i === st.age ? 'n' : ''}"></i>`;
+    $('mockMed').innerHTML = `<div style="display:flex;flex-direction:column;gap:3px;min-width:0">${small}</div><div class="yrs">${yrs}</div>`;
+  }
+
+  function copyText(txt, onOk, onFail){
+    try{ navigator.clipboard.writeText(txt).then(onOk, onFail); }catch(e){ onFail(); }
+  }
+  function selectNode(el){ const r = document.createRange(); r.selectNodeContents(el); const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r); }
+
+  $('wBirth').value = birth; $('wLife').value = life;
+  $('wBirth').max = new Date().toISOString().slice(0, 10);
+  $('wBirth').addEventListener('change', e => { birth = /^\d{4}-\d{2}-\d{2}$/.test(e.target.value) ? e.target.value : ''; render(); });
+  $('wLife').addEventListener('change', e => { const v = Math.round(Number(e.target.value)); if (v >= 40 && v <= 120) life = v; e.target.value = life; render(); });
+  $('langBtn').addEventListener('click', () => { prefs.lang = prefs.lang === 'zh' ? 'en' : 'zh'; const all = store.get('lc.prefs', {}) || {}; all.lang = prefs.lang; store.set('lc.prefs', all); render(); });
+  $('copyScript').addEventListener('click', () => {
+    copyText(script(), () => { $('copyMsg').textContent = t().copied; }, () => { $('copyMsg').textContent = t().copyFail; selectNode($('scriptPre')); });
+  });
+  $('formulas').addEventListener('click', e => {
+    const b = e.target.closest('[data-copy]'); if (!b) return;
+    const el = $(b.dataset.copy);
+    copyText(el.textContent, () => { b.textContent = '✓'; setTimeout(() => { b.textContent = t().copyLabel; }, 1500); }, () => selectNode(el));
+  });
+  const tabs = [['tabIos', 'paneIos'], ['tabAnd', 'paneAnd']];
+  tabs.forEach(([tab, pane]) => $(tab).addEventListener('click', () => {
+    tabs.forEach(([t2, p2]) => { $(t2).setAttribute('aria-selected', String(t2 === tab)); $(p2).hidden = t2 !== tab; });
+  }));
+  if (/android/i.test(navigator.userAgent)) $('tabAnd').click();
+
+  render();
+  fetch('scriptable.js').then(r => r.ok ? r.text() : Promise.reject()).then(txt => { template = txt; render(); }).catch(() => {});
+})();
+</script>
+</body>
+</html>
