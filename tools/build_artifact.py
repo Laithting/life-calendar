@@ -11,10 +11,12 @@ SITE = 'https://laithting.github.io/life-calendar/'
 html = (docs / 'index.html').read_text(encoding='utf-8')
 css = (docs / 'style.css').read_text(encoding='utf-8')
 js = (docs / 'app.js').read_text(encoding='utf-8')
+tiles = (docs / 'tiles.js').read_text(encoding='utf-8')
 
 body = re.search(r'<body>(.*)</body>', html, re.S).group(1)
 body = re.sub(r'<script src="capacitor.js"></script>\s*', '', body)
 body = body.replace('href="privacy.html"', f'href="{SITE}privacy.html"')
+body = body.replace('<script src="tiles.js"></script>', '<script>\n' + tiles + '\n</script>')
 body = body.replace('<script src="app.js"></script>', '<script>\n' + js + '\n</script>')
 body = body.replace('href="widget.html"', f'href="{SITE}widget.html"')
 

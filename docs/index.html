@@ -69,10 +69,17 @@
         </div>
         <label class="check" id="stageToggleWrap"><input type="checkbox" id="stageToggle"><span data-i18n="showStages">階段上色</span></label>
         <label class="check" id="wallAllWrap" hidden><input type="checkbox" id="wallAll"><span data-i18n="wallAll">顯示整個人生</span></label>
+        <div class="zoom" id="zoomWrap" hidden>
+          <button type="button" id="zoomOut" data-i18n-aria="zoomOut">−</button>
+          <span id="zoomLbl">1×</span>
+          <button type="button" id="zoomIn" data-i18n-aria="zoomIn">＋</button>
+        </div>
       </div>
       <div class="legend" id="legend"></div>
       <div class="hint" id="hint"></div>
-      <div class="grid" id="grid" tabindex="0" role="group" data-i18n-aria="gridLabel"></div>
+      <div class="gridscroll" id="gridScroll">
+        <div class="grid" id="grid" tabindex="0" role="group" data-i18n-aria="gridLabel"></div>
+      </div>
       <div class="info" id="info" aria-live="polite"></div>
     </section>
 
@@ -252,20 +259,28 @@
     <div class="ed-body">
       <div class="ed-left">
         <div class="pix" id="edPix"></div>
-        <p class="note" data-i18n="edDraw"></p>
+        <div class="palette" id="edPalette" role="group" data-i18n-aria="edPalette"></div>
         <div class="btnrow">
-          <button type="button" class="ghost sm" id="edAuto" data-i18n="edAuto"></button>
-          <button type="button" class="ghost sm" id="edInvert" data-i18n="edInvert"></button>
-          <button type="button" class="ghost sm" id="edClear" data-i18n="edClear"></button>
+          <div class="toolseg" role="group">
+            <button type="button" id="edPen" data-i18n="edPen">畫筆</button>
+            <button type="button" id="edFill" data-i18n="edFill">油漆桶</button>
+          </div>
+          <button type="button" class="ghost sm" id="edUndo" data-i18n="edUndo">上一步</button>
+          <button type="button" class="ghost sm" id="edClear" data-i18n="edClear">清空</button>
         </div>
+        <p class="note" data-i18n="edDraw"></p>
       </div>
       <div class="ed-right">
         <label for="edText" class="flabel" data-i18n="edText"></label>
         <textarea id="edText" rows="2" maxlength="200" data-i18n-ph="edPh"></textarea>
+        <div class="btnrow"><button type="button" class="primary sm" id="edAuto" data-i18n="edAuto">依文字生成</button></div>
+        <p class="note" data-i18n="edAutoHint"></p>
+        <span class="flabel" data-i18n="edMotif"></span>
+        <div class="motifs" id="edMotifs"></div>
+        <span class="flabel" data-i18n="edBg"></span>
+        <div class="patterns" id="edPatterns"></div>
         <span class="flabel" data-i18n="edMood"></span>
         <div class="moods" id="edMoods"></div>
-        <span class="flabel" data-i18n="edPattern"></span>
-        <div class="patterns" id="edPatterns"></div>
       </div>
     </div>
     <div class="sheet-foot">
@@ -278,6 +293,7 @@
 </div>
 
 <script src="capacitor.js"></script>
+<script src="tiles.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

@@ -91,8 +91,11 @@
       widgetTitle:'桌面小工具', widgetAdd:'把小工具加到主畫面', widgetHelp:'也可以長按主畫面空白處，點「小工具」，找到「一生日歷」。',
       widgetUnsupported:'這支手機不支援直接加入。請長按主畫面空白處，點「小工具」，找到「一生日歷」。', exportShare:'匯出備份檔',
       weekdayNames:'星期日,星期一,星期二,星期三,星期四,星期五,星期六',
-      edTitle:'{range} 這一週', edText:'這週最好的一件事', edPh:'例如：和老朋友聊到半夜', edMood:'這週的顏色', edPattern:'圖樣',
-      edDraw:'點或拖曳格子，自己畫', edAuto:'依文字自動生成', edInvert:'反轉', edClear:'清空',
+      edTitle:'{range} 這一週', edText:'這週最好的一件事', edPh:'例如：和老朋友聊到半夜', edMood:'這週的代表色（格子很小時顯示這個顏色）', edPattern:'圖樣',
+      edDraw:'點或拖曳格子作畫；選油漆桶可以把一整片換成同一個顏色。', edAuto:'依文字生成', edAutoHint:'會依這週寫的內容挑圖案，每按一次換一種構圖。', edClear:'清空',
+      edPalette:'顏色', edPen:'畫筆', edFill:'油漆桶', edUndo:'上一步', edBg:'背景圖樣', edMotif:'圖案（點一下貼到中間）',
+      zoomIn:'放大格子', zoomOut:'縮小格子', zoomHint:'放大之後，寫過回顧的週會直接顯示那塊磁磚。',
+      pt_rings:'同心圓', pt_gradient:'漸層',
       edSave:'儲存磁磚', edCancel:'取消', edDelete:'刪除這塊磁磚', edDeleteConfirm:'再按一次確定刪除', edClose:'關閉',
       exampleTag:'（示例）',
       m_sun:'開心', m_sky:'平靜', m_rose:'感恩', m_leaf:'成長', m_coral:'熱烈', m_slate:'疲累', m_indigo:'低落', m_violet:'興奮', m_brown:'溫暖', m_teal:'自由',
@@ -164,8 +167,11 @@
       widgetTitle:'Home-screen widget', widgetAdd:'Add the widget to your home screen', widgetHelp:'You can also long-press an empty spot on your home screen, tap Widgets, and find Life Calendar.',
       widgetUnsupported:'This phone cannot add it directly. Long-press an empty spot on your home screen, tap Widgets, and find Life Calendar.', exportShare:'Export backup',
       weekdayNames:'Sunday,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday',
-      edTitle:'Week of {range}', edText:'Best thing this week', edPh:'e.g. Talked with an old friend until midnight', edMood:"This week's color", edPattern:'Pattern',
-      edDraw:'Tap or drag the pixels to draw', edAuto:'Generate from text', edInvert:'Invert', edClear:'Clear',
+      edTitle:'Week of {range}', edText:'Best thing this week', edPh:'e.g. Talked with an old friend until midnight', edMood:"This week's color (shown when squares are tiny)", edPattern:'Pattern',
+      edDraw:'Tap or drag to draw. Use Fill to recolor a whole area at once.', edAuto:'Generate from text', edAutoHint:'Picks a picture from what you wrote. Each tap tries a new composition.', edClear:'Clear',
+      edPalette:'Colors', edPen:'Pen', edFill:'Fill', edUndo:'Undo', edBg:'Backgrounds', edMotif:'Pictures (tap to place in the middle)',
+      zoomIn:'Zoom in', zoomOut:'Zoom out', zoomHint:'Zoom in and reviewed weeks show their tiles.',
+      pt_rings:'Rings', pt_gradient:'Gradient',
       edSave:'Save tile', edCancel:'Cancel', edDelete:'Delete this tile', edDeleteConfirm:'Tap again to delete', edClose:'Close',
       exampleTag:' (example)',
       m_sun:'Happy', m_sky:'Calm', m_rose:'Grateful', m_leaf:'Growing', m_coral:'Fired up', m_slate:'Tired', m_indigo:'Low', m_violet:'Excited', m_brown:'Warm', m_teal:'Free',
@@ -183,7 +189,7 @@
   };
 
   const prefs = Object.assign({
-    view: 'week', theme: 'system', wallAll: false, lastBackup: null, remind: {day: 0, time: '21:00', on: false},
+    view: 'week', theme: 'system', wallAll: false, lastBackup: null, zoom: 1, remind: {day: 0, time: '21:00', on: false},
     lang: /^zh/i.test(navigator.language || 'zh') ? 'zh' : 'en'
   }, store.get('lc.prefs', {}));
   if (!['zh','en'].includes(prefs.lang)) prefs.lang = 'zh';
@@ -233,51 +239,13 @@
   };
   const MOOD_KEYS = Object.keys(MOODS);
   const STAGE_COLORS = ['#7B9BD1','#E0A57E','#D58FA9','#9C8BD3','#5FAFB8','#C2A26A','#A2AE5E','#8E9AAF'];
-  const BITMAPS = {
-    flower:  ['...#.#...','..#####..','.##.#.##.','..#####..','...#.#...','....#....','..#.#.#..','...###...','....#....'],
-    star:    ['....#....','....#....','...###...','#########','.#######.','..#####..','..##.##..','.##...##.','#.......#'],
-    heart:   ['.........','.##...##.','####.####','#########','#########','.#######.','..#####..','...###...','....#....'],
-    mountain:['.........','.........','..#......','.###..#..','#####.##.','#########','#########','#.#.#.#.#','.#.#.#.#.'],
-    sun:     ['#...#...#','.#.....#.','...###...','..#####..','#.#####.#','..#####..','...###...','.#.....#.','#...#...#']
-  };
-  const WAVE = [0,1,2,1,0,1,2,1,0];
-  const PATTERNS = {
-    dots:(x,y) => x % 2 === 0 && y % 2 === 0,
-    stripes:(x,y) => (x + y) % 3 === 0,
-    waves:(x,y) => (y + WAVE[x]) % 4 === 0,
-    checks:(x,y) => (Math.floor(x/3) + Math.floor(y/3)) % 2 === 0,
-    diamond:(x,y) => { const d = Math.abs(x-4) + Math.abs(y-4); return d === 4 || d === 2 || d === 0; },
-    flower:(x,y) => BITMAPS.flower[y][x] === '#', star:(x,y) => BITMAPS.star[y][x] === '#',
-    heart:(x,y) => BITMAPS.heart[y][x] === '#', mountain:(x,y) => BITMAPS.mountain[y][x] === '#',
-    sun:(x,y) => BITMAPS.sun[y][x] === '#'
-  };
-  const PATTERN_KEYS = Object.keys(PATTERNS);
-  const patternPx = k => { const a = []; for (let y = 0; y < 9; y++) for (let x = 0; x < 9; x++) a.push(PATTERNS[k](x,y) ? 1 : 0); return a; };
   function hashStr(s){ let h = 2166136261 >>> 0; for (const ch of String(s)){ h ^= ch.codePointAt(0); h = Math.imul(h, 16777619) >>> 0; } return h; }
-  function rng(seed){ let s = seed || 1; return () => { s ^= s << 13; s >>>= 0; s ^= s >>> 17; s ^= s << 5; s >>>= 0; return s / 4294967296; }; }
-  function genPx(seedStr){
-    const r = rng(hashStr(seedStr)); r(); r();
-    const px = new Array(81).fill(0);
-    for (let y = 0; y < 9; y++) for (let x = 0; x < 5; x++){ const on = r() < 0.47 ? 1 : 0; px[y*9+x] = on; px[y*9+8-x] = on; }
-    if (!px.some(Boolean)) px[40] = 1;
-    return px;
-  }
-  const pxToStr = a => a.map(v => v ? 1 : 0).join('');
-  const strToPx = s => /^[01]{81}$/.test(s || '') ? s.split('').map(Number) : null;
-  const tileCache = new Map();
-  function tileURL(color, px){
-    const key = color + pxToStr(px);
-    if (tileCache.has(key)) return tileCache.get(key);
-    const m = MOODS[color] || MOODS.sky;
-    const cv = document.createElement('canvas'); cv.width = 18; cv.height = 18;
-    const ctx = cv.getContext('2d');
-    ctx.fillStyle = m.t; ctx.fillRect(0, 0, 18, 18);
-    ctx.fillStyle = m.c;
-    px.forEach((v, i) => { if (v) ctx.fillRect((i % 9) * 2, Math.floor(i / 9) * 2, 2, 2); });
-    const url = cv.toDataURL();
-    tileCache.set(key, url);
-    return url;
-  }
+  const T = window.LCTiles;
+  // 調色盤編號 → 這週的代表色（格子太小看不到圖時用）
+  const PAL_MOOD = ['slate','slate','coral','coral','sun','leaf','sky','violet','rose','brown'];
+  const moodFor = art => PAL_MOOD[T.dominant(art)] || 'sky';
+  const artURL = s => T.url(s);
+  const ZOOMS = [1, 2, 3, 4, 6];
 
   /* ---------- 資料 ---------- */
   const EXAMPLE_BIRTH = '1996-05-20';
@@ -295,7 +263,11 @@
     out.reviews = {};
     Object.entries(obj(d.reviews)).forEach(([k, r]) => {
       if (!parseISO(k) || !r || typeof r !== 'object') return;
-      out.reviews[k] = { text: String(r.text || '').slice(0, 200), color: MOODS[r.color] ? r.color : 'sky', px: pxToStr(strToPx(r.px) || genPx(k)) };
+      let art = T.fromStr(r.art);
+      const legacy = MOODS[r.color] ? MOODS[r.color] : MOODS.sky;
+      if (!art && /^[01]{81}$/.test(r.px || '')) art = T.fromLegacy(r.px, legacy.c, legacy.t);
+      if (!art) art = T.generate(r.text || k, 0);
+      out.reviews[k] = { text: String(r.text || '').slice(0, 200), color: MOODS[r.color] ? r.color : moodFor(art), art: T.toStr(art) };
     });
     out.stages = Array.isArray(d.stages) ? d.stages.filter(s => s && s.name).map(s => ({
       id: String(s.id || uid()), name: String(s.name).slice(0, 20),
@@ -396,7 +368,8 @@
       const texts = EX_REVIEWS[prefs.lang];
       [1,2,3,5,6,7,9,11].forEach((back, i) => {
         const k = iso(addDays(mon, -7*back));
-        out[k] = { text: texts[i] + exTag(), color: MOOD_KEYS[(i*3) % MOOD_KEYS.length], px: pxToStr(i % 2 ? patternPx(PATTERN_KEYS[i % PATTERN_KEYS.length]) : genPx(texts[i])), ex: true };
+        const art = T.generate(texts[i], i % 3);
+        out[k] = { text: texts[i] + exTag(), color: moodFor(art), art: T.toStr(art), ex: true };
       });
       return out;
     }
@@ -468,9 +441,9 @@
 
   function cellClass(lived, isNow, stage, mk, future){
     let fill;
-    if (isNow) fill = 'n';
-    else if (mk && mk.ms) fill = 'm';
+    if (isNow) fill = mk && mk.rv ? 'n r' : 'n';
     else if (lived && mk && mk.rv) fill = 'r';
+    else if (mk && mk.ms) fill = 'm';
     else if (lived) fill = stage ? 'ps' : 'p';
     else fill = stage ? 'fs' : 'f';
     let cls = 'c ' + fill;
@@ -501,7 +474,10 @@
           if (state.sel === u) cls += ' sel';
           let style = '';
           if (stage) style += `--sc:${stage.color};`;
-          if (mk && mk.rv) style += `--rc:${MOODS[mk.rv[0].color].c};`;
+          if (mk && mk.rv){
+            style += `--rc:${MOODS[mk.rv[0].color].c};`;
+            if (u <= cur) style += `background-image:url(${artURL(mk.rv[0].art)});`;
+          }
           html += `<i class="${cls}" data-u="${u}"${style ? ` style="${style}"` : ''}>${prefs.view === 'year' ? y : ''}</i>`;
         }
         html += '</div>';
@@ -509,18 +485,19 @@
       html += '</div></div>';
     }
     $('grid').innerHTML = html;
-    $('hint').textContent = t('hint_' + prefs.view) + t('clickHint');
+    $('hint').textContent = t('hint_' + prefs.view) + t('clickHint') + (prefs.view === 'week' ? t('zoomHint') : '');
     renderLifeInfo(state.sel == null ? cur : state.sel);
   }
 
-  function infoHTML(title, s, e, tag, items, actions){
+  function infoHTML(title, s, e, tag, items, actions, art){
     const when = e && dn(e) !== dn(s) ? `${fmtDate(s)} – ${fmtDate(e)}` : fmtDate(s) + (lunar(s) ? ' · ' + lunar(s) : '');
     const tagCls = {lived:'t-p', now:'t-n', ahead:'t-f'}[tag];
     const tagTxt = {lived:t('tagLived'), now:t('tagNow'), ahead:t('tagAhead')}[tag];
     const its = items.map(([k, txt, color]) => `<span class="it"${color ? ` style="--ic:${color}"` : ''}><em>${esc(t('i_' + k))}</em>${esc(txt)}</span>`).join('');
     const acts = actions.map(a => `<button type="button" class="linkbtn" data-act="${a[0]}"${a[2] ? ` data-arg="${esc(a[2])}"` : ''}>${esc(a[1])}</button>`).join('');
     const nav = `<span class="nav"><button type="button" data-nav="-1" aria-label="${esc(t('prevCell'))}">‹</button><button type="button" data-nav="1" aria-label="${esc(t('nextCell'))}">›</button></span>`;
-    $('info').innerHTML = `<div class="info-top"><strong>${esc(title)}</strong><span class="when">${when}</span><span class="tag ${tagCls}">${tagTxt}</span>${nav}</div>${its ? `<div class="info-items">${its}</div>` : ''}${acts ? `<div class="info-acts">${acts}</div>` : ''}`;
+    const body = `<div class="info-top"><strong>${esc(title)}</strong><span class="when">${when}</span><span class="tag ${tagCls}">${tagTxt}</span>${nav}</div>${its ? `<div class="info-items">${its}</div>` : ''}${acts ? `<div class="info-acts">${acts}</div>` : ''}`;
+    $('info').innerHTML = art ? `<div class="info-wrap"><i class="info-tile" style="background-image:url(${artURL(art)})"></i><div class="info-body">${body}</div></div>` : body;
   }
 
   function renderLifeInfo(u){
@@ -537,7 +514,7 @@
       const k = weekKey(addDays(s, 3));
       actions.unshift(['tile', reviews()[k] && !reviews()[k].ex ? t('editTile') : t('makeTile'), k]);
     }
-    infoHTML(label, s, e, u < cur ? 'lived' : u === cur ? 'now' : 'ahead', items, actions);
+    infoHTML(label, s, e, u < cur ? 'lived' : u === cur ? 'now' : 'ahead', items, actions, mk.rv && u <= cur ? mk.rv[0].art : null);
   }
 
   function dayMarks(Y){
@@ -593,7 +570,7 @@
     const title = prefs.lang === 'zh' ? `${d.getMonth()+1}月${d.getDate()}日 星期${t('weekdays')[d.getDay()]}` : d.toLocaleDateString('en-US', {weekday:'long', month:'long', day:'numeric'});
     const actions = [['ms', t('addMsHere'), iso(d)]];
     if (i <= ti && dn(d) >= dn(birth())){ const k = weekKey(d); actions.unshift(['tile', reviews()[k] && !reviews()[k].ex ? t('editTile') : t('makeTile'), k]); }
-    infoHTML(title, d, null, i < ti ? 'lived' : i === ti ? 'now' : 'ahead', items, actions);
+    infoHTML(title, d, null, i < ti ? 'lived' : i === ti ? 'now' : 'ahead', items, actions, mk.rv ? mk.rv[0].art : null);
   }
 
   function renderWall(){
@@ -619,7 +596,7 @@
       ks.forEach(k => {
         const r = revs[k];
         const sel = state.sel === k ? ' sel' : '';
-        if (r){ count++; html += `<i class="tile${sel}" data-k="${k}" style="background-image:url(${tileURL(r.color, strToPx(r.px))})"></i>`; }
+        if (r){ count++; html += `<i class="tile${sel}" data-k="${k}" style="background-image:url(${artURL(r.art)})"></i>`; }
         else if (k === curK) html += `<i class="tile now${sel}" data-k="${k}">+</i>`;
         else html += `<i class="tile blank${sel}" data-k="${k}"></i>`;
       });
@@ -637,7 +614,7 @@
     const title = prefs.lang === 'zh' ? `${age} 歲` : `Age ${age}`;
     const items = r ? [['rv', r.text || '·', MOODS[r.color].c]] : [];
     if (data.intents[k]) items.push(['intent', data.intents[k]]);
-    infoHTML(title, mon, addDays(mon, 6), k === cur ? 'now' : 'lived', items, [['tile', r && !r.ex ? t('editTile') : t('makeTile'), k]]);
+    infoHTML(title, mon, addDays(mon, 6), k === cur ? 'now' : 'lived', items, [['tile', r && !r.ex ? t('editTile') : t('makeTile'), k]], r ? r.art : null);
   }
 
   function renderLegend(){
@@ -656,6 +633,13 @@
     $('wallAllWrap').hidden = prefs.view !== 'wall';
     $('stageToggle').checked = data.stagesOn;
     $('wallAll').checked = prefs.wallAll;
+    const z = prefs.view === 'week' ? (ZOOMS.includes(prefs.zoom) ? prefs.zoom : 1) : 1;
+    $('zoomWrap').hidden = prefs.view !== 'week';
+    $('zoomLbl').textContent = z + '×';
+    $('zoomOut').disabled = z === ZOOMS[0];
+    $('zoomIn').disabled = z === ZOOMS[ZOOMS.length - 1];
+    $('grid').style.setProperty('--z', z);
+    $('grid').classList.toggle('zoomed', z > 1);
     renderLegend();
     if (prefs.view === 'days') renderDays();
     else if (prefs.view === 'wall') renderWall();
@@ -704,7 +688,7 @@
     $('pastIntents').innerHTML = past.map(x => `<li><span class="d">${esc(t('pastWeek', {md: fmtMD(parseISO(x))}))}</span><span>${esc(data.intents[x])}</span></li>`).join('');
     const r = data.reviews[k];
     if (r){
-      $('twTile').style.backgroundImage = `url(${tileURL(r.color, strToPx(r.px))})`;
+      $('twTile').style.backgroundImage = `url(${artURL(r.art)})`;
       $('twTile').classList.remove('empty');
       $('twText').textContent = r.text || '';
       $('twBtn').textContent = t('editTile');
@@ -941,9 +925,10 @@
   function openEditor(k){
     const r = data.reviews[k];
     const mon = parseISO(k);
+    const art = r ? T.fromStr(r.art) : T.generate(data.intents[k] || k, 0);
     state.ed = {
-      k, text: r ? r.text : '', color: r ? r.color : MOOD_KEYS[hashStr(k) % MOOD_KEYS.length],
-      px: r ? strToPx(r.px) : genPx(k), isNew: !r, autoN: 0, armed: false, returnTo: document.activeElement
+      k, text: r ? r.text : '', art, color: r ? r.color : moodFor(art), moodTouched: !!r,
+      isNew: !r, autoN: 0, brush: 1, tool: 'pen', undo: [], returnTo: document.activeElement
     };
     $('edTitle').textContent = t('edTitle', {range: `${fmtMD(mon)} – ${fmtMD(addDays(mon, 6))}`});
     $('edText').value = state.ed.text;
@@ -951,6 +936,11 @@
     $('edDelete').textContent = t('edDelete');
     $('editor').hidden = false;
     document.body.classList.add('locked');
+    $('edPix').innerHTML = Array.from({length: 256}, (_, i) => `<i data-i="${i}"></i>`).join('');
+    $('edMotifs').innerHTML = T.MOTIF_KEYS.map(m => {
+      const name = T.MOTIFS[m][prefs.lang] || T.MOTIFS[m].zh;
+      return `<button type="button" class="pat" data-motif="${m}" title="${esc(name)}" aria-label="${esc(name)}" style="background-image:url(${artURL(T.motifPreview(m))})"></button>`;
+    }).join('');
     renderEditor();
     setTimeout(() => $('edText').focus(), 30);
   }
@@ -961,19 +951,36 @@
     state.ed = null;
     if (back && back.focus) back.focus();
   }
+  function edSecond(){
+    // 背景圖樣的第二個顏色：用畫面左上角的顏色，跟畫筆一樣時改用白或黑
+    const ed = state.ed, c = ed.art[0];
+    return c !== ed.brush ? c : (ed.brush === 0 ? 1 : 0);
+  }
   function renderEditor(){
     const ed = state.ed; if (!ed) return;
-    const m = MOODS[ed.color];
-    $('edPix').innerHTML = ed.px.map((v, i) => `<i data-i="${i}" class="${v ? 'on' : ''}"></i>`).join('');
-    $('edPix').style.setProperty('--on', m.c);
-    $('edPix').style.setProperty('--off', m.t);
+    if (!ed.moodTouched) ed.color = moodFor(ed.art);
+    paintPix();
+    const names = T.NAMES[prefs.lang] || T.NAMES.zh;
+    $('edPalette').innerHTML = T.PALETTE.map((c, i) => `<button type="button" class="swatch big" data-brush="${i}" aria-pressed="${i === ed.brush}" aria-label="${names[i]}" title="${names[i]}" style="background:${c}"></button>`).join('');
+    $('edPen').setAttribute('aria-pressed', String(ed.tool === 'pen'));
+    $('edFill').setAttribute('aria-pressed', String(ed.tool === 'fill'));
+    $('edUndo').disabled = !ed.undo.length;
     $('edMoods').innerHTML = MOOD_KEYS.map(k => `<button type="button" class="mood" data-mood="${k}" aria-pressed="${k === ed.color}" style="--mc:${MOODS[k].c}"><i></i>${t('m_' + k)}</button>`).join('');
-    $('edPatterns').innerHTML = PATTERN_KEYS.map(k => `<button type="button" class="pat" data-pat="${k}" title="${t('pt_' + k)}" aria-label="${t('pt_' + k)}" style="background-image:url(${tileURL(ed.color, patternPx(k))})"></button>`).join('');
+    const second = edSecond();
+    $('edPatterns').innerHTML = T.PATTERN_KEYS.map(k => `<button type="button" class="pat" data-pat="${k}" title="${t('pt_' + k)}" aria-label="${t('pt_' + k)}" style="background-image:url(${artURL(T.pattern(k, ed.brush, second))})"></button>`).join('');
   }
   function paintPix(){
     const ed = state.ed;
-    $('edPix').querySelectorAll('i').forEach((el, i) => el.classList.toggle('on', !!ed.px[i]));
+    const cells = $('edPix').children;
+    for (let i = 0; i < 256; i++) cells[i].style.background = T.PALETTE[ed.art[i]];
   }
+  function edPush(){
+    const ed = state.ed;
+    ed.undo.push(ed.art.slice());
+    if (ed.undo.length > 40) ed.undo.shift();
+    $('edUndo').disabled = false;
+  }
+  function edSet(art){ state.ed.art = art; renderEditor(); }
 
   /* ---------- 事件 ---------- */
   function bind(){
@@ -1179,47 +1186,64 @@
     $('edClose').addEventListener('click', closeEditor);
     $('edCancel').addEventListener('click', closeEditor);
     $('editor').addEventListener('click', e => { if (e.target === $('editor')) closeEditor(); });
-    document.addEventListener('keydown', e => { if (e.key === 'Escape' && state.ed) closeEditor(); });
+    document.addEventListener('keydown', e => {
+      if (!state.ed) return;
+      if (e.key === 'Escape') closeEditor();
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z' && document.activeElement !== $('edText')){ e.preventDefault(); $('edUndo').click(); }
+    });
     $('edText').addEventListener('input', e => { state.ed.text = e.target.value; });
     $('edMoods').addEventListener('click', e => {
       const b = e.target.closest('[data-mood]'); if (!b) return;
-      state.ed.color = b.dataset.mood; renderEditor();
+      state.ed.color = b.dataset.mood; state.ed.moodTouched = true; renderEditor();
+    });
+    $('edPalette').addEventListener('click', e => {
+      const b = e.target.closest('[data-brush]'); if (!b) return;
+      state.ed.brush = Number(b.dataset.brush); renderEditor();
+    });
+    $('edPen').addEventListener('click', () => { state.ed.tool = 'pen'; renderEditor(); });
+    $('edFill').addEventListener('click', () => { state.ed.tool = 'fill'; renderEditor(); });
+    $('edUndo').addEventListener('click', () => {
+      const ed = state.ed; if (!ed.undo.length) return;
+      edSet(ed.undo.pop());
     });
     $('edPatterns').addEventListener('click', e => {
       const b = e.target.closest('[data-pat]'); if (!b) return;
-      state.ed.px = patternPx(b.dataset.pat); paintPix();
+      edPush(); edSet(T.pattern(b.dataset.pat, state.ed.brush, edSecond()));
+    });
+    $('edMotifs').addEventListener('click', e => {
+      const b = e.target.closest('[data-motif]'); if (!b) return;
+      edPush(); edSet(T.stamp(state.ed.art, b.dataset.motif));
     });
     $('edAuto').addEventListener('click', () => {
-      const ed = state.ed; ed.autoN++;
-      const seed = (ed.text.trim() || ed.k) + '#' + ed.autoN;
-      ed.px = genPx(seed);
-      if (ed.isNew && ed.autoN === 1 && ed.text.trim()) { ed.color = MOOD_KEYS[hashStr(ed.text.trim()) % MOOD_KEYS.length]; renderEditor(); }
-      else paintPix();
+      const ed = state.ed;
+      edPush();
+      edSet(T.generate(ed.text.trim() || data.intents[ed.k] || ed.k, ed.autoN++));
     });
-    $('edInvert').addEventListener('click', () => { state.ed.px = state.ed.px.map(v => v ? 0 : 1); paintPix(); });
-    $('edClear').addEventListener('click', () => { state.ed.px = new Array(81).fill(0); paintPix(); });
-    let drawing = null;
+    $('edClear').addEventListener('click', () => { edPush(); edSet(T.blank(0)); });
+    let drawing = false;
     const pixAt = (x, y) => { const el = document.elementFromPoint(x, y); return el && el.parentElement === $('edPix') ? el : null; };
+    const paintAt = el => {
+      const ed = state.ed, i = +el.dataset.i;
+      if (ed.art[i] !== ed.brush){ ed.art[i] = ed.brush; el.style.background = T.PALETTE[ed.brush]; }
+    };
     $('edPix').addEventListener('pointerdown', e => {
       const el = pixAt(e.clientX, e.clientY); if (!el) return;
       e.preventDefault();
-      const i = +el.dataset.i;
-      drawing = state.ed.px[i] ? 0 : 1;
-      state.ed.px[i] = drawing; el.classList.toggle('on', !!drawing);
+      edPush();
+      if (state.ed.tool === 'fill'){ edSet(T.fill(state.ed.art, +el.dataset.i, state.ed.brush)); return; }
+      drawing = true; paintAt(el);
       try{ $('edPix').setPointerCapture(e.pointerId); }catch(err){}
     });
     $('edPix').addEventListener('pointermove', e => {
-      if (drawing == null) return;
-      const el = pixAt(e.clientX, e.clientY); if (!el) return;
-      const i = +el.dataset.i;
-      if (state.ed.px[i] !== drawing){ state.ed.px[i] = drawing; el.classList.toggle('on', !!drawing); }
+      if (!drawing) return;
+      const el = pixAt(e.clientX, e.clientY); if (el) paintAt(el);
     });
-    const stopDraw = () => { drawing = null; };
+    const stopDraw = () => { if (drawing){ drawing = false; renderEditor(); } };
     $('edPix').addEventListener('pointerup', stopDraw);
     $('edPix').addEventListener('pointercancel', stopDraw);
     $('edSave').addEventListener('click', () => {
       const ed = state.ed;
-      data.reviews[ed.k] = { text: $('edText').value.trim().slice(0, 200), color: ed.color, px: pxToStr(ed.px) };
+      data.reviews[ed.k] = { text: $('edText').value.trim().slice(0, 200), color: ed.moodTouched ? ed.color : moodFor(ed.art), art: T.toStr(ed.art) };
       save(); closeEditor(); renderBoard(); renderWeekCard();
     });
     $('edDelete').addEventListener('click', () => {
@@ -1228,6 +1252,17 @@
       save(); closeEditor(); renderBoard(); renderWeekCard();
       toast(t('tileDeleted'), () => { data.reviews[k] = old; save(); renderBoard(); renderWeekCard(); });
     });
+
+    // 縮放
+    const zoomBy = d => {
+      const cur = ZOOMS.indexOf(ZOOMS.includes(prefs.zoom) ? prefs.zoom : 1);
+      prefs.zoom = ZOOMS[Math.max(0, Math.min(ZOOMS.length - 1, cur + d))];
+      savePrefs(); renderBoard();
+      const target = $('grid').querySelector('.sel') || $('grid').querySelector('.c.n');
+      if (target) target.scrollIntoView({block: 'center', inline: 'center'});
+    };
+    $('zoomIn').addEventListener('click', () => zoomBy(1));
+    $('zoomOut').addEventListener('click', () => zoomBy(-1));
 
     // 每週提醒與小工具
     $('rDay').addEventListener('change', e => { prefs.remind.day = clampInt(e.target.value, 0, 6, 0); savePrefs(); renderPhone(); if (prefs.remind.on) scheduleNative(); });
