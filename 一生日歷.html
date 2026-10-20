@@ -1,0 +1,528 @@
+<title>一生日歷</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: 夜空墨藍的格子帳本。左邊是一生的格子，右邊是「此刻」的儀表與本週的一件事。 */
+:root{
+  --paper:#ECEFF5;
+  --surface:#F8F9FC;
+  --ink:#1A2242;
+  --muted:#5F6886;
+  --line:#C6CCDB;
+  --lived:#2E3A6C;
+  --now:#D0901F;
+  --now-ink:#93600C;
+  --now-glow:rgba(208,144,31,.55);
+  --mark:#3B8576;
+  --f-display:"LXGW WenKai TC","Kaiti TC","STKaiti","DFKai-SB",serif;
+  --f-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --f-num:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0E1325; --surface:#161C33; --ink:#E3E7F3; --muted:#8F98B4; --line:#2A3253;
+    --lived:#8796D8; --now:#F0B84E; --now-ink:#F0B84E; --now-glow:rgba(240,184,78,.5); --mark:#62B5A4;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0E1325; --surface:#161C33; --ink:#E3E7F3; --muted:#8F98B4; --line:#2A3253;
+  --lived:#8796D8; --now:#F0B84E; --now-ink:#F0B84E; --now-glow:rgba(240,184,78,.5); --mark:#62B5A4;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.65}
+.wrap{max-width:1200px;margin:0 auto;padding-block:28px 72px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:28px}
+
+/* header */
+.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px 32px}
+.brand{display:flex;flex-direction:column;gap:2px}
+.brand h1{margin:0;font-family:var(--f-display);font-weight:700;font-size:2.1rem;letter-spacing:.08em;line-height:1.2}
+.today{color:var(--muted);font-size:.9rem}
+.settings{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end}
+.field{display:flex;flex-direction:column;gap:4px}
+.field label{font-size:.75rem;color:var(--muted);letter-spacing:.06em}
+input,button{font:inherit;color:inherit}
+input[type=date],input[type=number],input[type=text]{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:7px 10px;min-width:0}
+input[type=number]{width:5.5em;font-family:var(--f-num)}
+input:focus-visible,button:focus-visible{outline:2px solid var(--now);outline-offset:2px}
+.example{font-size:.85rem;color:var(--now-ink);background:var(--surface);border:1px dashed var(--now);border-radius:8px;padding:8px 12px}
+
+/* hero */
+.hero{display:flex;flex-direction:column;gap:6px;max-width:44rem}
+.hero h2{margin:0;font-family:var(--f-display);font-weight:400;font-size:clamp(1.8rem,4.6vw,3rem);line-height:1.25;text-wrap:balance}
+.hero h2 b{font-family:var(--f-num);font-weight:500;color:var(--now-ink);letter-spacing:-.02em}
+.hero p{margin:0;color:var(--muted);font-size:1rem}
+.hero .num{font-family:var(--f-num);color:var(--ink)}
+.reflect{font-family:var(--f-display);font-size:1.15rem;color:var(--ink);margin-top:6px}
+
+/* main */
+.main{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:40px;align-items:start}
+@media (max-width:920px){.main{grid-template-columns:minmax(0,1fr)}}
+
+.board{display:flex;flex-direction:column;gap:14px;min-width:0}
+.boardhead{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px}
+.seg{display:inline-flex;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:3px}
+.seg button{border:0;background:transparent;padding:4px 16px;border-radius:999px;cursor:pointer;font-size:.9rem;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.78rem;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:10px;height:10px;border-radius:2px;display:inline-block;box-shadow:inset 0 0 0 1px var(--line)}
+.legend .lp{background:var(--lived);box-shadow:none}
+.legend .ln{background:var(--now);box-shadow:none}
+.legend .lm{background:var(--mark);box-shadow:none}
+.hint{font-size:.78rem;color:var(--muted)}
+
+.grid{display:flex;flex-direction:column;gap:var(--rg,2px)}
+.row{display:grid;grid-template-columns:26px minmax(0,1fr);gap:8px;align-items:center}
+.row.decade{margin-top:8px}
+.rl{font-family:var(--f-num);font-size:10px;color:var(--muted);text-align:right;line-height:1}
+.groups{display:grid;grid-template-columns:repeat(var(--G),minmax(0,1fr));gap:var(--gg,0)}
+.grp{display:grid;grid-template-columns:repeat(var(--P),minmax(0,1fr));gap:var(--cg,2px)}
+.c{display:block;aspect-ratio:1;border-radius:2px;box-shadow:inset 0 0 0 1px var(--line);cursor:pointer;font-style:normal}
+.c.p{background:var(--lived);box-shadow:none}
+.c.m{background:var(--mark);box-shadow:none}
+.c.n{background:var(--now);box-shadow:none;animation:pulse 2.4s ease-in-out infinite;position:relative;z-index:1}
+.c.x{box-shadow:inset 0 0 0 1px var(--line);opacity:.5}
+.c.sel{outline:2px solid var(--ink);outline-offset:1px;position:relative;z-index:2}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 var(--now-glow)}50%{box-shadow:0 0 0 5px rgba(0,0,0,0)}}
+.v-week{--rg:2px;--cg:2px}
+.v-month{--rg:6px;--cg:2px;--gg:10px}
+.v-year{--rg:8px;--gg:8px}
+.v-year .c{border-radius:6px;display:grid;place-items:center;font-family:var(--f-num);font-size:11px;color:var(--muted)}
+.v-year .c.p,.v-year .c.m{color:var(--paper)}
+.v-year .c.n{color:#1A2242}
+@media (max-width:560px){.v-week{--rg:1px;--cg:1px}.row{grid-template-columns:20px minmax(0,1fr);gap:4px}.c{border-radius:1px}.v-month{--gg:5px;--cg:1px}.v-year .c{font-size:9px;border-radius:4px}}
+
+.info{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;min-height:40px;font-size:.88rem;background:var(--surface);border-radius:8px;padding:8px 12px}
+.info .when{font-family:var(--f-num);color:var(--muted);font-size:.82rem}
+.info .tag{font-size:.75rem;padding:1px 8px;border-radius:999px;border:1px solid currentColor}
+.tag.t-p{color:var(--lived)} .tag.t-n{color:var(--now-ink)} .tag.t-f{color:var(--muted)}
+.info .ms{color:var(--mark)}
+.linkbtn{border:0;background:none;padding:0;color:var(--mark);text-decoration:underline;text-underline-offset:3px;cursor:pointer;font-size:.85rem}
+
+/* side */
+.side{display:flex;flex-direction:column;gap:32px;min-width:0}
+.side h3{margin:0 0 10px;font-size:.78rem;font-weight:500;letter-spacing:.14em;color:var(--muted)}
+.bars{display:flex;flex-direction:column;gap:14px}
+.bar .lbl{display:flex;justify-content:space-between;gap:10px;font-size:.88rem}
+.bar .lbl span:last-child{font-family:var(--f-num);font-size:.82rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.track{height:6px;border-radius:3px;background:var(--line);overflow:hidden;margin-top:5px}
+.fill{height:100%;background:var(--ink);border-radius:3px}
+.b-day .fill{background:var(--now)}
+.b-life .fill{background:var(--lived)}
+.countdown{font-family:var(--f-num);font-size:1.7rem;font-weight:500;letter-spacing:.02em;font-variant-numeric:tabular-nums;line-height:1.2}
+.countdown small{display:block;font-family:var(--f-body);font-size:.8rem;color:var(--muted);font-weight:400;letter-spacing:0}
+
+.intent{background:var(--surface);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:10px;border:1px solid var(--line)}
+.intent h3{margin:0}
+.intent input{width:100%;font-family:var(--f-display);font-size:1.1rem;background:var(--paper)}
+.intent .saved{font-size:.75rem;color:var(--muted);min-height:1.2em}
+.past{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px;font-size:.82rem;color:var(--muted)}
+.past li{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px}
+.past .d{font-family:var(--f-num);font-size:.75rem}
+
+.conv{display:grid;grid-template-columns:1fr 1fr;gap:14px 16px}
+.conv div{display:flex;flex-direction:column}
+.conv b{font-family:var(--f-num);font-weight:500;font-size:1.25rem;font-variant-numeric:tabular-nums;line-height:1.3}
+.conv span{font-size:.8rem;color:var(--muted)}
+
+.msform{display:grid;grid-template-columns:minmax(0,9.5em) minmax(0,1fr) auto;gap:6px}
+.msform button,.addbtn{border:1px solid var(--mark);background:var(--mark);color:var(--paper);border-radius:6px;padding:6px 12px;cursor:pointer}
+.mslist{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-direction:column;gap:6px;font-size:.88rem}
+.mslist li{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:baseline}
+.mslist .d{font-family:var(--f-num);font-size:.78rem;color:var(--muted)}
+.mslist button{border:0;background:none;color:var(--muted);cursor:pointer;padding:0 4px;font-size:1rem;line-height:1}
+.mslist button:hover{color:var(--ink)}
+.empty{font-size:.82rem;color:var(--muted);margin:8px 0 0}
+footer{font-size:.75rem;color:var(--muted)}
+
+@media (prefers-reduced-motion:reduce){.c.n{animation:none;box-shadow:0 0 0 2px var(--now-glow)}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <h1>一生日歷</h1>
+      <div class="today" id="todayLine"></div>
+    </div>
+    <div class="settings">
+      <div class="field"><label for="birth">生日</label><input type="date" id="birth"></div>
+      <div class="field"><label for="life">預期壽命（歲）</label><input type="number" id="life" min="40" max="120" step="1"></div>
+    </div>
+  </header>
+
+  <div class="example" id="exampleNote" hidden>目前顯示的是示例生日 1996 年 5 月 20 日。在右上角填入你的生日，格子就會換成你的一生。</div>
+
+  <section class="hero">
+    <h2 id="heroTitle"></h2>
+    <p id="heroSub"></p>
+    <div class="reflect" id="reflect"></div>
+  </section>
+
+  <div class="main">
+    <section class="board" aria-label="一生的格子">
+      <div class="boardhead">
+        <div class="seg" role="group" aria-label="格子單位">
+          <button type="button" id="vw-week" data-view="week">週</button>
+          <button type="button" id="vw-month" data-view="month">月</button>
+          <button type="button" id="vw-year" data-view="year">年</button>
+        </div>
+        <div class="legend">
+          <span><i class="lp"></i>已度過</span>
+          <span><i class="ln"></i>此刻</span>
+          <span><i></i>還在前方</span>
+          <span><i class="lm"></i>里程碑</span>
+        </div>
+      </div>
+      <div class="hint" id="hint"></div>
+      <div class="grid" id="grid"></div>
+      <div class="info" id="info" aria-live="polite"></div>
+    </section>
+
+    <aside class="side">
+      <div>
+        <h3>此刻</h3>
+        <div class="countdown" id="countdown"></div>
+        <div class="bars" style="margin-top:14px">
+          <div class="bar b-day"><div class="lbl"><span>今天</span><span id="pDay"></span></div><div class="track"><div class="fill" id="fDay"></div></div></div>
+          <div class="bar"><div class="lbl"><span>本週</span><span id="pWeek"></span></div><div class="track"><div class="fill" id="fWeek"></div></div></div>
+          <div class="bar"><div class="lbl"><span id="yearLbl">今年</span><span id="pYear"></span></div><div class="track"><div class="fill" id="fYear"></div></div></div>
+          <div class="bar b-life"><div class="lbl"><span>一生</span><span id="pLife"></span></div><div class="track"><div class="fill" id="fLife"></div></div></div>
+        </div>
+      </div>
+
+      <div class="intent">
+        <h3>這一週，我想好好做的一件事</h3>
+        <input type="text" id="intent" maxlength="80" placeholder="例如：週六帶媽媽去吃早午餐">
+        <div class="saved" id="intentSaved"></div>
+        <ul class="past" id="pastIntents"></ul>
+      </div>
+
+      <div>
+        <h3>如果活到預期的歲數，前方大約還有</h3>
+        <div class="conv" id="conv"></div>
+      </div>
+
+      <div>
+        <h3>里程碑</h3>
+        <form class="msform" id="msform">
+          <input type="date" id="msDate" aria-label="里程碑日期" required>
+          <input type="text" id="msText" aria-label="里程碑名稱" placeholder="畢業、搬家、相遇……" maxlength="40" required>
+          <button type="submit">加入</button>
+        </form>
+        <ul class="mslist" id="mslist"></ul>
+      </div>
+
+      <footer>生日、里程碑和每週的一件事只存在這個瀏覽器裡，不會上傳。</footer>
+    </aside>
+  </div>
+</div>
+
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+  const store = {
+    get(k, d){ try{ const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); }catch(e){ return d; } },
+    set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+  };
+  const DAY = 864e5;
+  const dn = d => Math.round(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / DAY);
+  const parseISO = s => { const [y,m,d] = String(s).split('-').map(Number); return (y && m && d) ? new Date(y, m-1, d) : null; };
+  const pad = n => String(n).padStart(2, '0');
+  const iso = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+  const fmt = d => `${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}`;
+  const nf = n => Math.round(n).toLocaleString('zh-TW');
+  const daysIn = d => new Date(d.getFullYear(), d.getMonth()+1, 0).getDate();
+  const addDays = (d, n) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
+  function addMonths(b, n){ const d = new Date(b.getFullYear(), b.getMonth()+n, 1); d.setDate(Math.min(b.getDate(), daysIn(d))); return d; }
+  const addYears = (b, n) => addMonths(b, n*12);
+  function fullYears(b, d){ let y = d.getFullYear() - b.getFullYear(); if (dn(addYears(b, y)) > dn(d)) y--; return y; }
+  function fullMonths(b, d){ let m = (d.getFullYear()-b.getFullYear())*12 + d.getMonth() - b.getMonth(); if (dn(addMonths(b, m)) > dn(d)) m--; return m; }
+
+  const WEEKDAY = ['日','一','二','三','四','五','六'];
+  const CN = ['','一','二','三','四','五','六','七','八','九','十'];
+  function cnDay(d){ if (d <= 10) return '初' + CN[d]; if (d < 20) return '十' + CN[d-10]; if (d === 20) return '二十'; if (d < 30) return '廿' + CN[d-20]; return '三十'; }
+  function cnMonth(n){ return n === 1 ? '正' : n <= 10 ? CN[n] : n === 11 ? '冬' : '臘'; }
+  function lunar(d){
+    try{
+      const parts = new Intl.DateTimeFormat('zh-TW-u-ca-chinese', {year:'numeric', month:'long', day:'numeric'}).formatToParts(d);
+      const get = t => (parts.find(p => p.type === t) || {}).value;
+      const yn = get('yearName') || '';
+      let mo = get('month') || '';
+      const day = parseInt(get('day'), 10);
+      if (!mo || !day) return '';
+      const num = mo.match(/^(閏)?(\d+)/);
+      if (num) mo = (num[1] || '') + cnMonth(+num[2]) + '月';
+      return `農曆${yn ? yn + '年' : ''}${mo}${cnDay(day)}`;
+    }catch(e){ return ''; }
+  }
+
+  const REFLECTIONS = [
+    '今天不會再來第二次。',
+    '你正在過的這一週，是整張格子上唯一發光的那一格。',
+    '不必把每一格填滿，只要記得自己在哪裡。',
+    '和重要的人吃一頓飯，比延後的計畫更值得。',
+    '慢慢來，但不要等。',
+    '前方的格子很多，但每一格都只能用一次。',
+    '留一點時間給沒有目的的散步。',
+    '今天做一件讓下週的自己感謝的小事。',
+    '把「改天」換成一個日期。',
+    '走過的格子都算數，包括那些看起來平凡的。',
+    '打一通電話給很久沒聯絡的人。',
+    '少滑一次手機，多看一次天色。',
+    '今天的你，是往後所有日子裡最年輕的你。',
+    '先做真正在乎的事，再處理緊急的事。'
+  ];
+
+  const EXAMPLE_BIRTH = '1996-05-20';
+  const EXAMPLE_MS = [
+    {d:'2014-09-01', t:'上大學（示例）'},
+    {d:'2018-07-02', t:'第一份工作（示例）'},
+    {d:'2023-03-18', t:'搬進自己的家（示例）'}
+  ];
+
+  const state = {
+    birthISO: store.get('lc.birth', null),
+    life: store.get('lc.life', 80),
+    view: store.get('lc.view', 'week'),
+    ms: store.get('lc.ms', []),
+    intents: store.get('lc.intents', {}),
+    sel: null
+  };
+  if (!['week','month','year'].includes(state.view)) state.view = 'week';
+  if (!Array.isArray(state.ms)) state.ms = [];
+  if (typeof state.intents !== 'object' || !state.intents) state.intents = {};
+
+  const isExample = () => !parseISO(state.birthISO);
+  const birth = () => parseISO(state.birthISO) || parseISO(EXAMPLE_BIRTH);
+  const milestones = () => (isExample() && state.ms.length === 0) ? EXAMPLE_MS : state.ms;
+  const today = () => { const n = new Date(); return new Date(n.getFullYear(), n.getMonth(), n.getDate()); };
+
+  const VIEWS = {
+    week: {
+      per: 52, yearsPerRow: 1, hint: '每一列是一年，每一格是一週。',
+      unitOf(b, d){ const y = fullYears(b, d); const w = Math.min(51, Math.floor((dn(d) - dn(addYears(b, y))) / 7)); return y*52 + w; },
+      range(b, u){
+        const y = Math.floor(u/52), w = u % 52;
+        const s = addDays(addYears(b, y), w*7);
+        const e = w === 51 ? addDays(addYears(b, y+1), -1) : addDays(s, 6);
+        return [s, e, `${y} 歲 · 第 ${w+1} 週`];
+      }
+    },
+    month: {
+      per: 12, yearsPerRow: 5, hint: '每一列是五年，每一小段是一年，每一格是一個月。',
+      unitOf(b, d){ return fullMonths(b, d); },
+      range(b, u){ const s = addMonths(b, u); return [s, addDays(addMonths(b, u+1), -1), `${Math.floor(u/12)} 歲 · 第 ${u%12+1} 個月`]; }
+    },
+    year: {
+      per: 1, yearsPerRow: 10, hint: '每一列是十年，每一格是一年，格子裡是那一年的歲數。',
+      unitOf(b, d){ return fullYears(b, d); },
+      range(b, u){ return [addYears(b, u), addDays(addYears(b, u+1), -1), `${u} 歲這一年`]; }
+    }
+  };
+
+  function msByUnit(v, b){
+    const map = new Map();
+    milestones().forEach(m => {
+      const d = parseISO(m.d); if (!d || dn(d) < dn(b)) return;
+      const u = v.unitOf(b, d);
+      if (!map.has(u)) map.set(u, []);
+      map.get(u).push(m);
+    });
+    return map;
+  }
+
+  function renderGrid(){
+    const b = birth(), t = today(), v = VIEWS[state.view];
+    const age = Math.max(0, fullYears(b, t));
+    const years = Math.max(state.life, age + 1);
+    const cur = v.unitOf(b, t);
+    const marks = msByUnit(v, b);
+    const rows = Math.ceil(years / v.yearsPerRow);
+    let html = '';
+    for (let r = 0; r < rows; r++){
+      const y0 = r * v.yearsPerRow;
+      const label = state.view === 'week' ? (y0 % 5 === 0 ? y0 : '') : y0;
+      const decade = state.view === 'week' && y0 > 0 && y0 % 10 === 0;
+      html += `<div class="row${decade ? ' decade' : ''}"><span class="rl">${label}</span><div class="groups" style="--G:${v.yearsPerRow}">`;
+      for (let g = 0; g < v.yearsPerRow && y0 + g < years; g++){
+        const y = y0 + g;
+        html += `<div class="grp" style="--P:${v.per}">`;
+        for (let k = 0; k < v.per; k++){
+          const u = y * v.per + k;
+          let cls = u < cur ? 'p' : u === cur ? 'n' : '';
+          if (marks.has(u) && u !== cur) cls += ' m';
+          if (y >= state.life && u > cur) cls += ' x';
+          if (u === state.sel) cls += ' sel';
+          html += `<i class="c ${cls}" data-u="${u}">${state.view === 'year' ? y : ''}</i>`;
+        }
+        html += '</div>';
+      }
+      html += '</div></div>';
+    }
+    const grid = $('grid');
+    grid.className = 'grid v-' + state.view;
+    grid.innerHTML = html;
+    $('hint').textContent = v.hint + '點一下任何一格，看看那是哪段日子。';
+    document.querySelectorAll('.seg button').forEach(btn => btn.setAttribute('aria-pressed', String(btn.dataset.view === state.view)));
+    renderInfo(state.sel == null ? cur : state.sel);
+  }
+
+  function renderInfo(u){
+    const b = birth(), v = VIEWS[state.view], cur = v.unitOf(b, today());
+    const [s, e, label] = v.range(b, u);
+    const marks = msByUnit(v, b).get(u) || [];
+    const tag = u < cur ? '<span class="tag t-p">已度過</span>' : u === cur ? '<span class="tag t-n">就是現在</span>' : '<span class="tag t-f">還在前方</span>';
+    const ms = marks.length ? `<span class="ms">● ${marks.map(m => esc(m.t)).join('、')}</span>` : '';
+    const add = `<button type="button" class="linkbtn" id="addHere">在這一格加入里程碑</button>`;
+    $('info').innerHTML = `<strong>${label}</strong><span class="when">${fmt(s)} – ${fmt(e)}</span>${tag}${ms}${add}`;
+    $('addHere').onclick = () => { $('msDate').value = iso(s); $('msText').focus(); };
+  }
+
+  function esc(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+  function renderHero(){
+    const b = birth(), t = today();
+    const death = addYears(b, state.life);
+    const livedDays = dn(t) - dn(b);
+    const totalWeeks = (dn(death) - dn(b)) / 7;
+    const weekNo = Math.floor(livedDays / 7) + 1;
+    const leftDays = dn(death) - dn(t);
+    const pct = Math.min(100, livedDays / (dn(death) - dn(b)) * 100);
+    $('heroTitle').innerHTML = `這是你人生的第 <b>${nf(weekNo)}</b> 週`;
+    if (leftDays > 0){
+      $('heroSub').innerHTML = `你已經走過 <span class="num">${nf(livedDays)}</span> 天，約佔 ${state.life} 年的 <span class="num">${pct.toFixed(1)}%</span>。前方大約還有 <span class="num">${nf(totalWeeks - weekNo + 1)}</span> 週。`;
+    } else {
+      $('heroSub').innerHTML = `你已經走過 <span class="num">${nf(livedDays)}</span> 天，超過了設定的 ${state.life} 歲。往後的每一格都是多出來的。`;
+    }
+    const dayOfYear = dn(t) - dn(new Date(t.getFullYear(), 0, 1));
+    $('reflect').textContent = REFLECTIONS[(dayOfYear + t.getFullYear()) % REFLECTIONS.length];
+    $('exampleNote').hidden = !isExample();
+
+    // 換算
+    const leftYears = Math.max(0, leftDays) / 365.2425;
+    let nb = addYears(b, fullYears(b, t) + 1);
+    const toBday = dn(nb) - dn(t);
+    const items = [
+      [nf(Math.max(0, leftDays) / 7), '個週末'],
+      [nf(Math.max(0, leftDays)), '次日出'],
+      [nf(leftYears * 12.368), '次滿月'],
+      [nf(leftYears * 24), '個節氣'],
+      [nf(Math.floor(leftYears)), '次春節'],
+      [nf(toBday), '天後是下一個生日']
+    ];
+    $('conv').innerHTML = items.map(([n, l]) => `<div><b>${n}</b><span>${l}</span></div>`).join('');
+  }
+
+  function renderToday(){
+    const t = new Date();
+    const lu = lunar(t);
+    $('todayLine').textContent = `${t.getFullYear()}年${t.getMonth()+1}月${t.getDate()}日 星期${WEEKDAY[t.getDay()]}${lu ? ' · ' + lu : ''}`;
+  }
+
+  function weekKey(d){ const wd = (d.getDay() + 6) % 7; return iso(addDays(d, -wd)); }
+
+  function renderIntent(){
+    const k = weekKey(today());
+    const inp = $('intent');
+    if (document.activeElement !== inp) inp.value = state.intents[k] || '';
+    const past = Object.keys(state.intents).filter(x => x !== k && state.intents[x]).sort().reverse().slice(0, 4);
+    $('pastIntents').innerHTML = past.length
+      ? past.map(x => { const d = parseISO(x); return `<li><span class="d">${d.getMonth()+1}/${d.getDate()} 那週</span><span>${esc(state.intents[x])}</span></li>`; }).join('')
+      : '';
+  }
+
+  function renderMs(){
+    const list = milestones().slice().sort((a, b) => a.d < b.d ? -1 : 1);
+    const ex = isExample() && state.ms.length === 0;
+    $('mslist').innerHTML = list.length
+      ? list.map((m, i) => `<li><span class="d">${esc(m.d.replace(/-/g, '/'))}</span><span>${esc(m.t)}</span>${ex ? '' : `<button type="button" aria-label="刪除 ${esc(m.t)}" data-d="${esc(m.d)}" data-t="${esc(m.t)}">×</button>`}</li>`).join('')
+      : '';
+    let empty = document.getElementById('msEmpty');
+    if (!list.length){
+      if (!empty){ empty = document.createElement('p'); empty.id = 'msEmpty'; empty.className = 'empty'; $('mslist').after(empty); }
+      empty.textContent = '加入畢業、搬家、認識重要的人這些日子，它們會在格子上亮起來。';
+    } else if (empty) empty.remove();
+  }
+
+  function tick(){
+    const now = new Date();
+    const mid = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const dayP = (now - mid) / DAY;
+    const left = Math.max(0, Math.floor((DAY - (now - mid)) / 1000));
+    $('countdown').innerHTML = `${pad(Math.floor(left/3600))}:${pad(Math.floor(left%3600/60))}:${pad(left%60)}<small>今天還剩下這麼多</small>`;
+    const mon = addDays(mid, -((now.getDay() + 6) % 7));
+    const weekP = (now - mon) / (7*DAY);
+    const y0 = new Date(now.getFullYear(), 0, 1), y1 = new Date(now.getFullYear()+1, 0, 1);
+    const yearP = (now - y0) / (y1 - y0);
+    const b = birth(), death = addYears(b, state.life);
+    const lifeP = Math.min(1, (now - b) / (death - b));
+    $('yearLbl').textContent = now.getFullYear() + ' 年';
+    const set = (id, p, digits) => { $('p'+id).textContent = (p*100).toFixed(digits) + '%'; $('f'+id).style.width = (p*100).toFixed(3) + '%'; };
+    set('Day', dayP, 1); set('Week', weekP, 1); set('Year', yearP, 2); set('Life', lifeP, 7);
+    if (iso(now) !== lastDay){ lastDay = iso(now); renderAll(); }
+  }
+
+  let lastDay = iso(new Date());
+  function renderAll(){ renderToday(); renderHero(); renderGrid(); renderIntent(); renderMs(); tick(); }
+
+  // events
+  $('birth').value = isExample() ? '' : state.birthISO;
+  $('birth').max = iso(today());
+  $('life').value = state.life;
+  $('birth').addEventListener('change', e => {
+    const d = parseISO(e.target.value);
+    if (d && dn(d) <= dn(today())){ state.birthISO = e.target.value; store.set('lc.birth', state.birthISO); }
+    else if (!e.target.value){ state.birthISO = null; store.set('lc.birth', null); }
+    state.sel = null; renderAll();
+  });
+  $('life').addEventListener('change', e => {
+    const n = Math.round(Number(e.target.value));
+    if (n >= 40 && n <= 120){ state.life = n; store.set('lc.life', n); }
+    e.target.value = state.life; renderAll();
+  });
+  document.querySelectorAll('.seg button').forEach(btn => btn.addEventListener('click', () => {
+    state.view = btn.dataset.view; state.sel = null; store.set('lc.view', state.view); renderGrid();
+  }));
+  $('grid').addEventListener('click', e => {
+    const c = e.target.closest('.c'); if (!c) return;
+    const u = Number(c.dataset.u);
+    const prev = $('grid').querySelector('.c.sel'); if (prev) prev.classList.remove('sel');
+    state.sel = u; c.classList.add('sel'); renderInfo(u);
+  });
+  $('grid').addEventListener('mouseover', e => {
+    const c = e.target.closest('.c'); if (c && state.sel == null) renderInfo(Number(c.dataset.u));
+  });
+  $('grid').addEventListener('mouseleave', () => {
+    if (state.sel == null) renderInfo(VIEWS[state.view].unitOf(birth(), today()));
+  });
+  let saveTimer;
+  $('intent').addEventListener('input', e => {
+    const k = weekKey(today());
+    state.intents[k] = e.target.value.trim();
+    if (!state.intents[k]) delete state.intents[k];
+    store.set('lc.intents', state.intents);
+    $('intentSaved').textContent = '已記下';
+    clearTimeout(saveTimer); saveTimer = setTimeout(() => { $('intentSaved').textContent = ''; }, 1500);
+  });
+  $('msform').addEventListener('submit', e => {
+    e.preventDefault();
+    const d = $('msDate').value, t = $('msText').value.trim();
+    if (!parseISO(d) || !t) return;
+    state.ms.push({d, t}); store.set('lc.ms', state.ms);
+    $('msText').value = '';
+    renderGrid(); renderMs();
+  });
+  $('mslist').addEventListener('click', e => {
+    const btn = e.target.closest('button[data-d]'); if (!btn) return;
+    const i = state.ms.findIndex(m => m.d === btn.dataset.d && m.t === btn.dataset.t);
+    if (i >= 0){ state.ms.splice(i, 1); store.set('lc.ms', state.ms); renderGrid(); renderMs(); }
+  });
+
+  renderAll();
+  setInterval(tick, 1000);
+})();
+</script>
