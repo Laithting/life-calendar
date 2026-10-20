@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Life Calendar</string>
+    <string name="title_activity_main">Life Calendar</string>
+    <string name="widget_description">Which week of your life this is, and how much of it you have lived</string>
+    <string name="widget_preview_week">Week 1,588</string>
+    <string name="widget_preview_sub">38.0% of life · 2,587 weeks left</string>
+    <string name="widget_grid_desc">Your life grid</string>
+</resources>

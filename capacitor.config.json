@@ -1,0 +1,19 @@
+{
+  "appId": "com.lifecalendar.app",
+  "appName": "一生日歷",
+  "webDir": "docs",
+  "backgroundColor": "#ECEFF5",
+  "android": {
+    "allowMixedContent": false
+  },
+  "plugins": {
+    "SystemBars": {
+      "insetsHandling": "native",
+      "initialViewportFitValueHint": "cover"
+    },
+    "LocalNotifications": {
+      "smallIcon": "ic_stat_life",
+      "iconColor": "#1A2242"
+    }
+  }
+}

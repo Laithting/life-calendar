@@ -5,6 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>一生日歷</title>
 <meta name="description" content="把一生畫成一格一週的格子，看見此刻在哪裡，提醒自己把握當下。">
+<meta property="og:type" content="website">
+<meta property="og:title" content="一生日歷">
+<meta property="og:description" content="把一生畫成一格一週的格子，看見此刻在哪裡，提醒自己把握當下。">
+<meta property="og:url" content="https://laithting.github.io/life-calendar/">
+<meta property="og:image" content="https://laithting.github.io/life-calendar/icons/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#ECEFF5" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0E1325" media="(prefers-color-scheme: dark)">
 <link rel="manifest" href="manifest.webmanifest">
@@ -64,7 +72,7 @@
       </div>
       <div class="legend" id="legend"></div>
       <div class="hint" id="hint"></div>
-      <div class="grid" id="grid"></div>
+      <div class="grid" id="grid" tabindex="0" role="group" data-i18n-aria="gridLabel"></div>
       <div class="info" id="info" aria-live="polite"></div>
     </section>
 
@@ -194,18 +202,45 @@
 
     <section class="panel">
       <h3 data-i18n="p_phone">手機</h3>
+      <p class="warn" id="iosNote" hidden data-i18n="iosStorage"></p>
       <p class="note" id="installedNote" hidden data-i18n="installed"></p>
-      <div id="installHelp">
+      <div id="installHelp" class="stack">
         <button type="button" class="primary" id="installBtn" hidden data-i18n="installBtn">加到主畫面</button>
         <p class="desc" data-i18n="installIos"></p>
         <p class="desc" data-i18n="installAndroid"></p>
         <p class="desc" data-i18n="installOffline"></p>
       </div>
-      <a class="cta" href="widget.html"><span data-i18n="widgetLink">設定手機桌面小工具</span> →</a>
+      <div class="stack" id="remindBox">
+        <h4 data-i18n="remindTitle">每週提醒</h4>
+        <p class="desc" data-i18n="remindDesc"></p>
+        <div class="form">
+          <div class="field"><label for="rDay" data-i18n="remindDay">星期</label><select id="rDay"></select></div>
+          <div class="field"><label for="rTime" data-i18n="remindTime">時間</label><input type="time" id="rTime" value="21:00"></div>
+        </div>
+        <div class="btnrow" id="remindWeb">
+          <a class="ghost btnlink" id="gcalLink" href="https://calendar.google.com/" target="_blank" rel="noopener" data-i18n="remindGcal">加到 Google 日曆</a>
+          <button type="button" class="ghost" id="icsBtn" data-i18n="remindIcs">下載行事曆檔（.ics）</button>
+        </div>
+        <div class="btnrow" id="remindNative" hidden>
+          <button type="button" class="primary" id="remindToggle"></button>
+        </div>
+        <p class="note" id="remindMsg" aria-live="polite"></p>
+      </div>
+      <div class="stack" id="nativeWidget" hidden>
+        <h4 data-i18n="widgetTitle">桌面小工具</h4>
+        <div class="btnrow"><button type="button" class="ghost" id="widgetAddBtn" data-i18n="widgetAdd">把小工具加到主畫面</button></div>
+        <p class="note" id="widgetMsg" aria-live="polite"></p>
+      </div>
+      <a class="cta" id="webWidget" href="widget.html"><span data-i18n="widgetLink">設定手機桌面小工具</span> →</a>
     </section>
   </div>
 
-  <footer data-i18n="footer"></footer>
+  <footer><span id="footerText"></span><a href="privacy.html" data-i18n="privacy">隱私權政策</a></footer>
+</div>
+
+<div class="toast" id="toast" hidden role="status">
+  <span id="toastMsg"></span>
+  <button type="button" class="linkbtn" id="toastUndo" data-i18n="undo">復原</button>
 </div>
 
 <div class="overlay" id="editor" hidden>
@@ -242,6 +277,7 @@
   </div>
 </div>
 
+<script src="capacitor.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

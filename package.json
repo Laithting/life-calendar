@@ -1,0 +1,24 @@
+{
+  "name": "life-calendar",
+  "version": "1.0.0",
+  "private": true,
+  "description": "一生日歷：把一生畫成一格一週的格子，提醒自己把握當下。",
+  "scripts": {
+    "sync": "cap sync",
+    "build:android": "cap sync android && cd android && gradlew assembleDebug",
+    "android": "cap open android",
+    "ios": "cap open ios"
+  },
+  "dependencies": {
+    "@capacitor/android": "8.5.3",
+    "@capacitor/core": "8.5.3",
+    "@capacitor/filesystem": "8.1.5",
+    "@capacitor/ios": "8.5.3",
+    "@capacitor/local-notifications": "8.3.1",
+    "@capacitor/preferences": "8.0.1",
+    "@capacitor/share": "8.0.3"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "8.5.3"
+  }
+}

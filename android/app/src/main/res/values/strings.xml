@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">一生日歷</string>
+    <string name="title_activity_main">一生日歷</string>
+    <string name="package_name">com.lifecalendar.app</string>
+    <string name="custom_url_scheme">com.lifecalendar.app</string>
+    <string name="widget_description">這是你人生的第幾週，以及一生走了多少</string>
+    <string name="widget_preview_week">第 1,588 週</string>
+    <string name="widget_preview_sub">一生 38.0% · 還有 2,587 週</string>
+    <string name="widget_grid_desc">一生的格子</string>
+</resources>

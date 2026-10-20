@@ -75,12 +75,22 @@
       importTitle:'從備份還原', importFile:'選擇備份檔', importPaste:'或貼上備份文字', importCheck:'檢查這份備份',
       importSummary:'這份備份有 {r} 則回顧、{m} 個里程碑、{p} 位重要的人、{b} 個願望、{c} 個倒數。匯入會取代這個瀏覽器裡目前的資料。',
       importConfirm:'確認匯入', importCancel:'取消', importDone:'匯入完成。', importBad:'這不是一生日歷的備份，請確認選對了檔案或貼上了完整的文字。',
-      lastBackup:'上次備份：{d}', neverBackup:'還沒有備份過。', backupNudge:'已經超過 30 天沒有備份了，建議下載一份新的備份。',
+      lastBackup:'上次備份：{d}', neverBackup:'還沒有備份過。', neverBackupNudge:'還沒有備份過，建議先下載一份。', backupNudge:'已經超過 30 天沒有備份了，建議下載一份新的備份。',
       p_phone:'手機', installBtn:'加到主畫面', installed:'已經加到主畫面了。',
       installIos:'iPhone：用 Safari 打開這個網站，點下方的「分享」，再點「加入主畫面」。',
       installAndroid:'Android：用 Chrome 打開這個網站，點右上角的選單，再點「加到主畫面」或「安裝應用程式」。',
       installOffline:'加到主畫面之後，沒有網路也能打開。', widgetLink:'設定手機桌面小工具',
-      footer:'生日、回顧和所有記錄只存在這個瀏覽器裡，不會上傳到任何地方。',
+      footer:'生日、回顧和所有記錄只存在這個瀏覽器裡，不會上傳到任何地方。', footerApp:'生日、回顧和所有記錄只存在這支手機裡，不會上傳到任何地方。', privacy:'隱私權政策',
+      gridLabel:'一生的格子。用方向鍵移動，按 Enter 打開這一格。', prevCell:'上一格', nextCell:'下一格',
+      undo:'復原', deleted:'已刪除「{name}」', tileDeleted:'已刪除這週的磁磚',
+      iosStorage:'iPhone 提醒：Safari 可能會清掉 7 天沒打開的網站資料，建議加到主畫面使用。Safari 和主畫面裡的資料是分開的；如果已經在 Safari 記錄了一段時間，先在下面的「資料與備份」下載備份檔，再從主畫面打開後匯入。',
+      remindTitle:'每週提醒', remindDesc:'固定一個時間回顧這一週，做這週的磁磚。', remindDay:'星期', remindTime:'時間',
+      remindGcal:'加到 Google 日曆', remindIcs:'下載行事曆檔（.ics）', remindOn:'開啟每週提醒', remindOff:'關閉每週提醒',
+      remindSet:'已開啟：每{day} {time} 提醒你。', remindNone:'目前沒有開啟提醒。', remindDenied:'沒有通知權限。請到手機的設定裡，允許「一生日歷」傳送通知。',
+      remindEvt:'一生日歷：回顧這一週', remindBody:'寫下這週最好的一件事，做出這週的磁磚，再想想下週想好好做的一件事。',
+      widgetTitle:'桌面小工具', widgetAdd:'把小工具加到主畫面', widgetHelp:'也可以長按主畫面空白處，點「小工具」，找到「一生日歷」。',
+      widgetUnsupported:'這支手機不支援直接加入。請長按主畫面空白處，點「小工具」，找到「一生日歷」。', exportShare:'匯出備份檔',
+      weekdayNames:'星期日,星期一,星期二,星期三,星期四,星期五,星期六',
       edTitle:'{range} 這一週', edText:'這週最好的一件事', edPh:'例如：和老朋友聊到半夜', edMood:'這週的顏色', edPattern:'圖樣',
       edDraw:'點或拖曳格子，自己畫', edAuto:'依文字自動生成', edInvert:'反轉', edClear:'清空',
       edSave:'儲存磁磚', edCancel:'取消', edDelete:'刪除這塊磁磚', edDeleteConfirm:'再按一次確定刪除', edClose:'關閉',
@@ -138,12 +148,22 @@
       importTitle:'Restore from a backup', importFile:'Choose a backup file', importPaste:'Or paste backup text', importCheck:'Check this backup',
       importSummary:'This backup has {r} reviews, {m} milestones, {p} people, {b} goals and {c} countdowns. Importing replaces the data currently in this browser.',
       importConfirm:'Import and replace', importCancel:'Cancel', importDone:'Imported.', importBad:'This is not a Life Calendar backup. Check that you chose the right file or pasted all of the text.',
-      lastBackup:'Last backup: {d}', neverBackup:'No backup yet.', backupNudge:'It has been more than 30 days since your last backup. Consider downloading a new one.',
+      lastBackup:'Last backup: {d}', neverBackup:'No backup yet.', neverBackupNudge:'No backup yet. Consider downloading one now.', backupNudge:'It has been more than 30 days since your last backup. Consider downloading a new one.',
       p_phone:'On your phone', installBtn:'Add to home screen', installed:'Added to your home screen.',
       installIos:'iPhone: open this site in Safari, tap Share, then Add to Home Screen.',
       installAndroid:'Android: open this site in Chrome, tap the menu in the top right, then Add to Home screen or Install app.',
       installOffline:'Once it is on your home screen, it opens even without a connection.', widgetLink:'Set up a home-screen widget',
-      footer:'Your birthday, reviews and everything else stay in this browser. Nothing is uploaded.',
+      footer:'Your birthday, reviews and everything else stay in this browser. Nothing is uploaded.', footerApp:'Your birthday, reviews and everything else stay on this phone. Nothing is uploaded.', privacy:'Privacy policy',
+      gridLabel:'Your life grid. Use the arrow keys to move and Enter to open a square.', prevCell:'Previous square', nextCell:'Next square',
+      undo:'Undo', deleted:'Deleted "{name}"', tileDeleted:"Deleted this week's tile",
+      iosStorage:'iPhone note: Safari may clear data for sites you have not opened in 7 days, so add this site to your home screen. Safari and the home-screen app keep separate data. If you have been using it in Safari, download a backup under Data & backup first, then import it after opening from the home screen.',
+      remindTitle:'Weekly reminder', remindDesc:"Pick a regular time to look back on the week and make this week's tile.", remindDay:'Day', remindTime:'Time',
+      remindGcal:'Add to Google Calendar', remindIcs:'Download calendar file (.ics)', remindOn:'Turn on weekly reminder', remindOff:'Turn off weekly reminder',
+      remindSet:'On: every {day} at {time}.', remindNone:'No reminder set.', remindDenied:'Notifications are not allowed. Allow notifications for Life Calendar in your phone settings.',
+      remindEvt:'Life Calendar: look back on this week', remindBody:"Write down the best thing this week, make this week's tile, and pick one thing to do well next week.",
+      widgetTitle:'Home-screen widget', widgetAdd:'Add the widget to your home screen', widgetHelp:'You can also long-press an empty spot on your home screen, tap Widgets, and find Life Calendar.',
+      widgetUnsupported:'This phone cannot add it directly. Long-press an empty spot on your home screen, tap Widgets, and find Life Calendar.', exportShare:'Export backup',
+      weekdayNames:'Sunday,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday',
       edTitle:'Week of {range}', edText:'Best thing this week', edPh:'e.g. Talked with an old friend until midnight', edMood:"This week's color", edPattern:'Pattern',
       edDraw:'Tap or drag the pixels to draw', edAuto:'Generate from text', edInvert:'Invert', edClear:'Clear',
       edSave:'Save tile', edCancel:'Cancel', edDelete:'Delete this tile', edDeleteConfirm:'Tap again to delete', edClose:'Close',
@@ -163,12 +183,13 @@
   };
 
   const prefs = Object.assign({
-    view: 'week', theme: 'system', wallAll: false, lastBackup: null,
+    view: 'week', theme: 'system', wallAll: false, lastBackup: null, remind: {day: 0, time: '21:00', on: false},
     lang: /^zh/i.test(navigator.language || 'zh') ? 'zh' : 'en'
   }, store.get('lc.prefs', {}));
   if (!['zh','en'].includes(prefs.lang)) prefs.lang = 'zh';
   if (!['week','month','year','days','wall'].includes(prefs.view)) prefs.view = 'week';
   if (!['system','light','dark'].includes(prefs.theme)) prefs.theme = 'system';
+  if (!prefs.remind || typeof prefs.remind !== 'object') prefs.remind = {day: 0, time: '21:00', on: false};
   const savePrefs = () => store.set('lc.prefs', prefs);
 
   function t(key, vars){
@@ -312,9 +333,48 @@
     if (!out.stages) out.stages = defaultStages();
     return out;
   }
+  const hadStoredData = store.get('lc.data', null) != null;
   let data = loadData();
-  const save = () => store.set('lc.data', data);
-  save();
+  /* ---------- 原生 App（Capacitor） ---------- */
+  const Cap = window.Capacitor;
+  const isNative = !!(Cap && Cap.isNativePlatform && Cap.isNativePlatform());
+  const pluginCache = {};
+  const plugin = name => {
+    if (!isNative || !Cap.registerPlugin) return null;
+    if (!(name in pluginCache)) pluginCache[name] = Cap.isPluginAvailable(name) ? Cap.registerPlugin(name) : null;
+    return pluginCache[name];
+  };
+  const native = {
+    sync(){
+      if (!isNative) return;
+      const pref = plugin('Preferences');
+      if (pref) pref.set({key: 'lc.data', value: JSON.stringify(data)}).catch(() => {});
+      const w = plugin('LifeWidget');
+      if (w) w.update({birth: data.birth || '', life: data.life, lang: prefs.lang}).catch(() => {});
+    },
+    async restore(){
+      // 手機系統清掉網頁儲存空間時，從原生儲存還原
+      const pref = plugin('Preferences');
+      if (!pref || hadStoredData) return false;
+      try{
+        const r = await pref.get({key: 'lc.data'});
+        if (!r || !r.value) return false;
+        data = normalize(JSON.parse(r.value));
+        if (!data.stages) data.stages = defaultStages();
+        store.set('lc.data', data);
+        return true;
+      }catch(e){ return false; }
+    }
+  };
+  let persistAsked = false;
+  const save = () => {
+    store.set('lc.data', data);
+    native.sync();
+    if (!persistAsked && !isNative && navigator.storage && navigator.storage.persist){
+      persistAsked = true;
+      navigator.storage.persist().catch(() => {});
+    }
+  };
 
   const isExample = () => !data.birth;
   const birth = () => parseISO(data.birth) || parseISO(EXAMPLE_BIRTH);
@@ -459,7 +519,8 @@
     const tagTxt = {lived:t('tagLived'), now:t('tagNow'), ahead:t('tagAhead')}[tag];
     const its = items.map(([k, txt, color]) => `<span class="it"${color ? ` style="--ic:${color}"` : ''}><em>${esc(t('i_' + k))}</em>${esc(txt)}</span>`).join('');
     const acts = actions.map(a => `<button type="button" class="linkbtn" data-act="${a[0]}"${a[2] ? ` data-arg="${esc(a[2])}"` : ''}>${esc(a[1])}</button>`).join('');
-    $('info').innerHTML = `<div class="info-top"><strong>${esc(title)}</strong><span class="when">${when}</span><span class="tag ${tagCls}">${tagTxt}</span></div>${its ? `<div class="info-items">${its}</div>` : ''}${acts ? `<div class="info-acts">${acts}</div>` : ''}`;
+    const nav = `<span class="nav"><button type="button" data-nav="-1" aria-label="${esc(t('prevCell'))}">‹</button><button type="button" data-nav="1" aria-label="${esc(t('nextCell'))}">›</button></span>`;
+    $('info').innerHTML = `<div class="info-top"><strong>${esc(title)}</strong><span class="when">${when}</span><span class="tag ${tagCls}">${tagTxt}</span>${nav}</div>${its ? `<div class="info-items">${its}</div>` : ''}${acts ? `<div class="info-acts">${acts}</div>` : ''}`;
   }
 
   function renderLifeInfo(u){
@@ -742,16 +803,84 @@
     const lb = parseISO(prefs.lastBackup);
     let s = lb ? t('lastBackup', {d: fmtDate(lb)}) : t('neverBackup');
     const hasData = Object.keys(data.reviews).length || data.milestones.length || data.people.length || data.bucket.length || data.countdowns.length || Object.keys(data.intents).length;
-    if (hasData && (!lb || dn(today()) - dn(lb) > 30)) s += ' ' + t('backupNudge');
+    if (hasData && !lb) s = t('neverBackupNudge');
+    else if (hasData && dn(today()) - dn(lb) > 30) s += ' ' + t('backupNudge');
     $('backupState').textContent = s;
   }
 
   let deferredPrompt = null;
   const standalone = () => (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  function nextReminder(){
+    const [hh, mm] = (prefs.remind.time || '21:00').split(':').map(Number);
+    const now = new Date();
+    let d = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hh || 0, mm || 0);
+    while (d.getDay() !== prefs.remind.day || d <= now) d = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1, hh || 0, mm || 0);
+    return d;
+  }
+  const stamp = d => `${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}T${pad(d.getHours())}${pad(d.getMinutes())}00`;
+  const BYDAY = ['SU','MO','TU','WE','TH','FR','SA'];
+  const SITE = 'https://laithting.github.io/life-calendar/';
+  function gcalURL(){
+    const s = nextReminder(), e = new Date(s.getTime() + 15*60000);
+    let tz = '';
+    try{ tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; }catch(err){}
+    const q = new URLSearchParams({action: 'TEMPLATE', text: t('remindEvt'), details: t('remindBody') + '\n\n' + SITE,
+      dates: `${stamp(s)}/${stamp(e)}`, recur: `RRULE:FREQ=WEEKLY;BYDAY=${BYDAY[prefs.remind.day]}`});
+    if (tz) q.set('ctz', tz);
+    return 'https://calendar.google.com/calendar/render?' + q.toString();
+  }
+  function icsText(){
+    const s = nextReminder();
+    const icsEsc = v => String(v).replace(/[\\;,]/g, m => '\\' + m).replace(/\n/g, '\\n');
+    const now = new Date();
+    const utc = `${now.getUTCFullYear()}${pad(now.getUTCMonth()+1)}${pad(now.getUTCDate())}T${pad(now.getUTCHours())}${pad(now.getUTCMinutes())}${pad(now.getUTCSeconds())}Z`;
+    return ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Life Calendar//EN','CALSCALE:GREGORIAN','BEGIN:VEVENT',
+      `UID:weekly-review-${now.getTime()}@life-calendar`, `DTSTAMP:${utc}`, `DTSTART:${stamp(s)}`, 'DURATION:PT15M',
+      `RRULE:FREQ=WEEKLY;BYDAY=${BYDAY[prefs.remind.day]}`, `SUMMARY:${icsEsc(t('remindEvt'))}`,
+      `DESCRIPTION:${icsEsc(t('remindBody') + '\n\n' + SITE)}`, `URL:${SITE}`,
+      'BEGIN:VALARM','TRIGGER:PT0M','ACTION:DISPLAY',`DESCRIPTION:${icsEsc(t('remindEvt'))}`,'END:VALARM',
+      'END:VEVENT','END:VCALENDAR',''].join('\r\n');
+  }
   function renderPhone(){
+    const web = !isNative;
     $('installBtn').hidden = !deferredPrompt;
-    $('installedNote').hidden = !standalone();
-    $('installHelp').hidden = standalone() || !window.LC_STANDALONE;
+    $('installedNote').hidden = !(web && standalone());
+    $('installHelp').hidden = !web || standalone() || !window.LC_STANDALONE;
+    $('iosNote').hidden = !(web && isIOS && !standalone() && window.LC_STANDALONE);
+    $('webWidget').hidden = !web;
+    $('nativeWidget').hidden = !(isNative && plugin('LifeWidget'));
+    const names = t('weekdayNames').split(',');
+    $('rDay').innerHTML = names.map((n, i) => `<option value="${i}"${i === prefs.remind.day ? ' selected' : ''}>${n}</option>`).join('');
+    $('rTime').value = prefs.remind.time;
+    $('remindWeb').hidden = isNative;
+    $('icsBtn').hidden = !window.LC_STANDALONE;
+    $('gcalLink').href = gcalURL();
+    $('remindNative').hidden = !isNative;
+    if (isNative){
+      $('remindToggle').textContent = prefs.remind.on ? t('remindOff') : t('remindOn');
+      const dayName = prefs.lang === 'zh' ? names[prefs.remind.day].replace(/^星期/, '週') : names[prefs.remind.day];
+      $('remindMsg').textContent = prefs.remind.on ? t('remindSet', {day: dayName, time: prefs.remind.time}) : t('remindNone');
+    }
+    $('footerText').textContent = isNative ? t('footerApp') : t('footer');
+    $('exportBtn').textContent = isNative ? t('exportShare') : t('exportBtn');
+  }
+  async function scheduleNative(){
+    const ln = plugin('LocalNotifications');
+    if (!ln) return false;
+    try{
+      await ln.cancel({notifications: [{id: 1001}]}).catch(() => {});
+      if (!prefs.remind.on) return true;
+      let perm = await ln.checkPermissions();
+      if (perm.display !== 'granted') perm = await ln.requestPermissions();
+      if (perm.display !== 'granted') return false;
+      const [hh, mm] = prefs.remind.time.split(':').map(Number);
+      await ln.schedule({notifications: [{
+        id: 1001, title: t('remindEvt'), body: t('remindBody'),
+        schedule: {on: {weekday: prefs.remind.day + 1, hour: hh, minute: mm}, allowWhileIdle: true}
+      }]});
+      return true;
+    }catch(e){ return false; }
   }
 
   function renderPanels(){ renderPeople(); renderStages(); renderBucket(); renderCountdowns(); renderMs(); renderData(); renderPhone(); }
@@ -761,6 +890,10 @@
     if (prefs.theme === 'system') document.documentElement.removeAttribute('data-theme');
     else document.documentElement.setAttribute('data-theme', prefs.theme);
     $('themeBtn').textContent = t('theme_' + prefs.theme);
+    document.querySelectorAll('meta[name="theme-color"]').forEach(m => {
+      if (!m.dataset.orig) m.dataset.orig = m.content;
+      m.content = prefs.theme === 'system' ? m.dataset.orig : (prefs.theme === 'dark' ? '#0E1325' : '#ECEFF5');
+    });
   }
   function applyI18n(){
     document.documentElement.lang = prefs.lang === 'zh' ? 'zh-Hant-TW' : 'en';
@@ -792,6 +925,17 @@
   }
 
   function renderAll(){ applyI18n(); renderToday(); renderHero(); renderBoard(); renderWeekCard(); renderPanels(); tick(); }
+
+  /* ---------- 提示與復原 ---------- */
+  let toastTimer, toastUndo = null;
+  function toast(msg, undo){
+    $('toastMsg').textContent = msg;
+    toastUndo = undo || null;
+    $('toastUndo').hidden = !undo;
+    $('toast').hidden = false;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { $('toast').hidden = true; toastUndo = null; }, 6000);
+  }
 
   /* ---------- 磁磚編輯器 ---------- */
   function openEditor(k){
@@ -849,6 +993,7 @@
     $('langBtn').addEventListener('click', () => {
       prefs.lang = prefs.lang === 'zh' ? 'en' : 'zh'; savePrefs();
       state.importData = null; $('importBox').hidden = true; $('dataMsg').textContent = '';
+      native.sync();
       renderAll();
     });
 
@@ -860,14 +1005,24 @@
     $('wallAll').addEventListener('change', e => { prefs.wallAll = e.target.checked; savePrefs(); renderBoard(); });
 
     $('grid').addEventListener('click', e => {
-      const c = e.target.closest('[data-u],[data-d],[data-k]'); if (!c) return;
-      const prev = $('grid').querySelector('.sel'); if (prev) prev.classList.remove('sel');
-      c.classList.add('sel');
-      if (c.dataset.k){
-        state.sel = c.dataset.k; renderWallInfo(c.dataset.k);
-        openEditor(c.dataset.k);
-      } else if (c.dataset.d != null){ state.sel = Number(c.dataset.d); renderDayInfo(state.sel); }
-      else { state.sel = Number(c.dataset.u); renderLifeInfo(state.sel); }
+      const c = e.target.closest(CELL); if (!c) return;
+      selectCell(c);
+      if (c.dataset.k) openEditor(c.dataset.k);
+    });
+    $('grid').addEventListener('keydown', e => {
+      const keys = {ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1]};
+      const k = keys[e.key];
+      if (k){
+        e.preventDefault();
+        // 「今年」視圖是直的一欄一週，左右跳一週、上下跳一天
+        const step = prefs.view === 'days' ? k[0] * 7 + k[1] : k[0] + k[1] * rowStep();
+        return moveSel(step);
+      }
+      if (e.key === 'Enter' || e.key === ' '){
+        e.preventDefault();
+        const btn = $('info').querySelector('[data-act="tile"]');
+        if (btn) openEditor(btn.dataset.arg);
+      }
     });
     $('grid').addEventListener('mouseover', e => {
       if (state.sel != null) return;
@@ -878,6 +1033,12 @@
     });
     $('grid').addEventListener('mouseleave', () => { if (state.sel == null) renderBoardInfoDefault(); });
     $('info').addEventListener('click', e => {
+      const nb = e.target.closest('[data-nav]');
+      if (nb){
+        moveSel(Number(nb.dataset.nav));
+        const again = $('info').querySelector(`[data-nav="${nb.dataset.nav}"]`); if (again) again.focus();
+        return;
+      }
       const btn = e.target.closest('[data-act]'); if (!btn) return;
       if (btn.dataset.act === 'tile') openEditor(btn.dataset.arg);
       if (btn.dataset.act === 'ms'){ $('msDate').value = btn.dataset.arg; $('msText').focus(); $('msText').scrollIntoView({block:'center', behavior:'smooth'}); }
@@ -947,13 +1108,28 @@
     document.querySelector('.panels').addEventListener('click', e => {
       const btn = e.target.closest('[data-del]'); if (!btn) return;
       const kind = btn.dataset.del;
-      data[kind] = data[kind].filter(x => x.id !== btn.dataset.id);
+      const idx = data[kind].findIndex(x => x.id === btn.dataset.id); if (idx < 0) return;
+      const [item] = data[kind].splice(idx, 1);
       save(); renderPanels(); renderBoard();
+      toast(t('deleted', {name: item.name || item.text || item.t || ''}), () => {
+        data[kind].splice(Math.min(idx, data[kind].length), 0, item);
+        save(); renderPanels(); renderBoard();
+      });
     });
+    $('toastUndo').addEventListener('click', () => { const u = toastUndo; $('toast').hidden = true; toastUndo = null; if (u) u(); });
 
     // 備份
-    $('exportBtn').addEventListener('click', () => {
+    $('exportBtn').addEventListener('click', async () => {
       const json = backupJSON();
+      if (isNative){
+        const fs = plugin('Filesystem'), sh = plugin('Share');
+        try{
+          const r = await fs.writeFile({path: `life-calendar-${iso(today())}.json`, data: json, directory: 'CACHE', encoding: 'utf8'});
+          await sh.share({title: t('appName'), files: [r.uri]});
+          prefs.lastBackup = iso(today()); savePrefs(); renderData();
+        }catch(err){ if (!/cancel/i.test(String(err && err.message))) showExportText(json); }
+        return;
+      }
       try{
         const blob = new Blob([json], {type: 'application/json'});
         const a = document.createElement('a');
@@ -985,9 +1161,7 @@
       state.importData = null; save();
       $('importBox').hidden = true; $('importText').value = '';
       $('dataMsg').textContent = t('importDone');
-      // 在 Claude 頁面裡沒辦法下載檔案，只保留「複製備份文字」
-  if (!window.LC_STANDALONE) $('exportBtn').hidden = true;
-  $('birth').value = data.birth || ''; $('life').value = data.life;
+      $('birth').value = data.birth || ''; $('life').value = data.life;
       renderAll();
     });
     $('importCancel').addEventListener('click', () => { state.importData = null; $('importBox').hidden = true; });
@@ -1049,11 +1223,55 @@
       save(); closeEditor(); renderBoard(); renderWeekCard();
     });
     $('edDelete').addEventListener('click', () => {
-      const ed = state.ed;
-      if (!ed.armed){ ed.armed = true; $('edDelete').textContent = t('edDeleteConfirm'); return; }
-      delete data.reviews[ed.k];
+      const k = state.ed.k, old = data.reviews[k];
+      delete data.reviews[k];
       save(); closeEditor(); renderBoard(); renderWeekCard();
+      toast(t('tileDeleted'), () => { data.reviews[k] = old; save(); renderBoard(); renderWeekCard(); });
     });
+
+    // 每週提醒與小工具
+    $('rDay').addEventListener('change', e => { prefs.remind.day = clampInt(e.target.value, 0, 6, 0); savePrefs(); renderPhone(); if (prefs.remind.on) scheduleNative(); });
+    $('rTime').addEventListener('change', e => {
+      if (!/^\d{2}:\d{2}$/.test(e.target.value)) return;
+      prefs.remind.time = e.target.value; savePrefs(); renderPhone(); if (prefs.remind.on) scheduleNative();
+    });
+    $('icsBtn').addEventListener('click', () => {
+      const blob = new Blob([icsText()], {type: 'text/calendar'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob); a.download = 'life-calendar-weekly.ics';
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+    });
+    $('remindToggle').addEventListener('click', async () => {
+      prefs.remind.on = !prefs.remind.on; savePrefs();
+      const ok = await scheduleNative();
+      if (!ok && prefs.remind.on){ prefs.remind.on = false; savePrefs(); renderPhone(); $('remindMsg').textContent = t('remindDenied'); return; }
+      renderPhone();
+    });
+    $('widgetAddBtn').addEventListener('click', async () => {
+      const w = plugin('LifeWidget'); if (!w) return;
+      try{ const r = await w.requestPin(); $('widgetMsg').textContent = r && r.supported ? t('widgetHelp') : t('widgetUnsupported'); }
+      catch(e){ $('widgetMsg').textContent = t('widgetUnsupported'); }
+    });
+  }
+
+  const CELL = '[data-u],[data-d],[data-k]';
+  function selectCell(c){
+    const prev = $('grid').querySelector('.sel'); if (prev) prev.classList.remove('sel');
+    c.classList.add('sel');
+    if (c.dataset.k){ state.sel = c.dataset.k; renderWallInfo(c.dataset.k); }
+    else if (c.dataset.d != null){ state.sel = Number(c.dataset.d); renderDayInfo(state.sel); }
+    else { state.sel = Number(c.dataset.u); renderLifeInfo(state.sel); }
+    c.scrollIntoView({block: 'nearest', inline: 'nearest'});
+  }
+  const rowStep = () => ({week: 52, month: 60, year: 10, days: 7, wall: window.matchMedia('(max-width:560px)').matches ? 14 : 27})[prefs.view];
+  function moveSel(step){
+    const cells = [...$('grid').querySelectorAll(CELL)];
+    if (!cells.length) return;
+    let i = cells.findIndex(c => c.classList.contains('sel'));
+    if (i < 0) i = cells.findIndex(c => c.classList.contains('n') || c.classList.contains('now'));
+    if (i < 0) i = 0;
+    selectCell(cells[Math.max(0, Math.min(cells.length - 1, i + step))]);
   }
 
   function renderBoardInfoDefault(){
@@ -1081,14 +1299,25 @@
 
   /* ---------- 啟動 ---------- */
   // 在 Claude 頁面裡沒辦法下載檔案，只保留「複製備份文字」
-  if (!window.LC_STANDALONE) $('exportBtn').hidden = true;
+  if (!window.LC_STANDALONE && !isNative) $('exportBtn').hidden = true;
+  if (isNative) document.documentElement.classList.add('native');
+  store.set('lc.data', data);
   $('birth').value = data.birth || '';
   $('birth').max = iso(today());
   $('life').value = data.life;
   bind();
   renderAll();
   setInterval(tick, 1000);
-  if (window.LC_STANDALONE && 'serviceWorker' in navigator){
+  if (isNative){
+    native.restore().then(restored => {
+      if (restored){ $('birth').value = data.birth || ''; $('life').value = data.life; renderAll(); }
+      native.sync();
+      if (prefs.remind.on) scheduleNative();
+    });
+    // 從背景回到 App 時，日期可能已經換了
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) tick(); });
+  }
+  if (window.LC_STANDALONE && !isNative && 'serviceWorker' in navigator){
     window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); });
   }
 })();
