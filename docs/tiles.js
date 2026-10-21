@@ -78,7 +78,7 @@
         'kwddwkkwddwk', 'kwwwwkkwwwwk', 'aaaaaaaaaaaa', '.aaaaaaaaaa.']
     },
     music: {
-      zh: '音符', en: 'Music', colors: { a: P }, alt: [{ a: K }, { a: B }, { a: R }],
+      thin: true, zh: '音符', en: 'Music', colors: { a: P }, alt: [{ a: K }, { a: B }, { a: R }],
       kw: ['音樂', '歌', '唱', '演唱會', '吉他', '鋼琴', '樂團', 'music', 'song', 'sing', 'concert', 'guitar', 'piano'],
       art: ['....aaaaaaa.', '....aaaaaaa.', '....a.....a.', '....a.....a.', '....a.....a.', '....a.....a.',
         '....a.....a.', '..aaa...aaa.', '.aaaa..aaaa.', '.aaaa..aaaa.', '..aa....aa..']
@@ -127,11 +127,11 @@
     },
     shoe: {
       zh: '球鞋', en: 'Sneaker', colors: { a: R, b: W, w: W, k: K }, alt: [{ a: B }, { a: G }, { a: O }],
-      kw: ['跑', '運動', '健身', '球', '騎', '瑜伽', '馬拉松', 'run', 'gym', 'sport', 'exercise', 'yoga', 'workout'],
+      kw: ['跑', '運動', '健身', '球', '瑜伽', '馬拉松', 'run', 'gym', 'sport', 'exercise', 'yoga', 'workout'],
       art: ['....kkk.....', '...kaaak....', '...kawaakk..', '..kaaawaaakk', 'kkaaaaaaaaak', 'kbbbbbbbbbbk', '.kkkkkkkkkk.']
     },
     rain: {
-      zh: '雨雲', en: 'Rain', colors: { a: W, b: B }, alt: [{ a: P, b: B }],
+      thin: true, zh: '雨雲', en: 'Rain', colors: { a: W, b: B }, alt: [{ a: P, b: B }],
       kw: ['雨', '陰天', '颱風', 'rain', 'cloudy', 'storm'],
       art: ['....aaa.....', '..aaaaaaa...', '.aaaaaaaaaa.', 'aaaaaaaaaaaa', 'aaaaaaaaaaaa', '.aaaaaaaaaa.',
         '............', '..b...b...b.', '.b...b...b..', '...b...b....', '..b...b.....']
@@ -155,7 +155,7 @@
         'kaaaawaaaaak', 'kaaaaaaaaaak', 'kkkkkkkkkkkk', '...kk..kk...']
     },
     snow: {
-      zh: '雪花', en: 'Snowflake', colors: { a: W }, alt: [{ a: B }],
+      thin: true, zh: '雪花', en: 'Snowflake', colors: { a: W }, alt: [{ a: B }],
       kw: ['雪', '冬', '冷', '聖誕', 'snow', 'winter', 'christmas', 'cold'],
       art: ['.....a.....', '...a.a.a...', '....aaa....', '.a...a...a.', '..a..a..a..', 'aaaaaaaaaaa',
         '..a..a..a..', '.a...a...a.', '....aaa....', '...a.a.a...', '.....a.....']
@@ -172,7 +172,7 @@
       art: ['.kkkkkkkkkk.', 'kaaaaaaaaaak', 'kakaaaaaabak', 'kkkkaaaacaak', 'kakaaaaaabak', 'kaaakkkkaaak', '.kkk....kkk.']
     },
     pencil: {
-      zh: '鉛筆', en: 'Pencil', colors: { a: Y, c: PK, w: O, k: K }, alt: [{ a: B }, { a: G }],
+      thin: true, zh: '鉛筆', en: 'Pencil', colors: { a: Y, c: PK, w: O, k: K }, alt: [{ a: B }, { a: G }],
       kw: ['寫', '日記', '畫', '藝術', '創作', '設計', 'write', 'diary', 'draw', 'paint', 'art', 'design'],
       art: ['..........cc', '.........ccc', '........aac.', '.......aaa..', '......aaa...', '.....aaa....',
         '....aaa.....', '...aaa......', '..waa.......', '.ww.........', 'kw..........', 'k...........']
@@ -182,6 +182,23 @@
       kw: ['禮物', '驚喜', 'gift', 'present', 'surprise'],
       art: ['..bb...bb..', '.b..b.b..b.', 'kkkkkbkkkkk', 'kaaaabaaaak', 'kkkkkbkkkkk', '.kaaabaaak.',
         '.kaaabaaak.', '.kaaabaaak.', '.kaaabaaak.', '.kkkkkkkkk.']
+    },
+    bike: {
+      thin: true, zh: '腳踏車', en: 'Bicycle', colors: { a: R, b: BR, c: BR, k: K }, alt: [{ a: B }, { a: G }, { a: Y }],
+      kw: ['腳踏車', '單車', '自行車', '騎車', '環島', 'bike', 'bicycle', 'cycling'],
+      art: ['....bbb...kkk.', '.....a....a...', '.....aaaaaa...', '.....a...aa...', '.kkka.a.a.kak.', 'k..ak.aa.k.a.k',
+        'k.kaaaac.k.k.k', 'k...k..c.k...k', '.kkk......kkk.']
+    },
+    car: {
+      zh: '汽車', en: 'Car', colors: { a: B, c: Y, w: W, k: K }, alt: [{ a: R }, { a: Y, c: W }, { a: G }],
+      kw: ['汽車', '開車', '兜風', '自駕', '車子', 'car', 'drive', 'road trip'],
+      art: ['....aaaaaa....', '...awwawwwa...', '..awwwawwwwa..', 'aaaaaaaaaaaaac', 'aaaaaaaaaaaaaa', 'aaakkaaaaakkaa', '...kk.....kk..']
+    },
+    train: {
+      zh: '火車', en: 'Train', colors: { a: R, c: Y, w: W, k: K }, alt: [{ a: B }, { a: G }],
+      kw: ['火車', '高鐵', '捷運', '通勤', '地鐵', 'train', 'metro', 'subway', 'commute'],
+      art: ['..aaaaaaaa..', '.aaaaaaaaaa.', '.awwwaawwwa.', '.awwwaawwwa.', '.aaaaaaaaaa.', '.aaaaaaaaaa.',
+        '.acaaaaaaca.', '.aaaaaaaaaa.', '..kk....kk..', '.k........k.', 'k..........k']
     },
     smile: {
       zh: '笑臉', en: 'Smile', colors: { a: Y, k: K }, alt: [{ a: O }, { a: PK }],
@@ -243,9 +260,10 @@
   const sceneFor = text => { const s = String(text || '').toLowerCase(); return SCENES.find(sc => sc.kw.some(w => s.includes(w))) || null; };
 
   /* ---------- 背景 ---------- */
-  function background(r, a, b) {
+  function background(r, a, b, thin) {
     const art = blank(a);
-    const style = pick(r, ['solid', 'gradient', 'gradient', 'dots', 'stripes', 'burst', 'horizon']);
+    // 細線條的圖案配上花俏背景會看不清楚，只用乾淨的背景
+    const style = pick(r, thin ? ['solid', 'solid', 'dots', 'horizon'] : ['solid', 'gradient', 'gradient', 'dots', 'stripes', 'burst', 'horizon']);
     for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) {
       let useB = false;
       if (style === 'gradient') useB = (y / S) * 16 > BAYER[(y % 4) * 4 + (x % 4)] + 2;
@@ -279,14 +297,14 @@
       bgB = second.length ? pick(r, second) : bgA;
     }
     if (bgB === cmap.k && cmap.k === K) bgB = bgA;
-    const art = background(r, bgA, bgB);
+    const art = background(r, bgA, bgB, m.thin);
     const h = m.art.length, w = m.art[0].length;
     const ox = Math.max(0, Math.min(S - w, Math.round((S - w) / 2 + (r() < 0.5 ? 0 : (r() < 0.5 ? -1 : 1)))));
     const oy = Math.max(0, Math.min(S - h, Math.round((S - h) / 2 + (r() < 0.5 ? 0 : (r() < 0.5 ? -1 : 1)))));
     const mask = new Array(N).fill(false);
     m.art.forEach((row, y) => [...row].forEach((ch, x) => { if (ch !== '.') mask[(oy + y) * S + ox + x] = true; }));
     // 影子
-    if (r() < 0.45) {
+    if (!m.thin && r() < 0.4) {
       const sh = [K, BR, P, B].find(c => c !== bgA && c !== bgB && !used.has(c));
       if (sh != null) for (let i = 0; i < N; i++) {
         if (!mask[i]) continue;
@@ -298,7 +316,7 @@
     // 點綴
     const sparkPool = [Y, W, PK, O].filter(c => c !== bgA && c !== bgB);
     const sparkColor = spark != null ? spark : (sparkPool.length ? pick(r, sparkPool) : R);
-    const count = 2 + Math.floor(r() * 4);
+    const count = m.thin ? 1 + Math.floor(r() * 2) : 2 + Math.floor(r() * 4);
     for (let t = 0, placed = 0; t < 60 && placed < count; t++) {
       const x = 1 + Math.floor(r() * (S - 2)), y = 1 + Math.floor(r() * (S - 2));
       let near = false;

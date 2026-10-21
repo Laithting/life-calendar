@@ -298,3 +298,5 @@ footer a{color:var(--muted)}
 .info-wrap{display:grid;grid-template-columns:72px minmax(0,1fr);gap:12px;align-items:start}
 .info-body{display:flex;flex-direction:column;gap:6px;min-width:0}
 .info-tile{display:block;width:72px;aspect-ratio:1;border-radius:8px;background-size:100% 100%;image-rendering:pixelated;box-shadow:0 0 0 1px var(--line)}
+.note.found{color:var(--mark)}
+.note.found:empty{display:none}

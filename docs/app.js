@@ -92,7 +92,7 @@
       widgetUnsupported:'這支手機不支援直接加入。請長按主畫面空白處，點「小工具」，找到「一生日歷」。', exportShare:'匯出備份檔',
       weekdayNames:'星期日,星期一,星期二,星期三,星期四,星期五,星期六',
       edTitle:'{range} 這一週', edText:'這週最好的一件事', edPh:'例如：和老朋友聊到半夜', edMood:'這週的代表色（格子很小時顯示這個顏色）', edPattern:'圖樣',
-      edDraw:'點或拖曳格子作畫；選油漆桶可以把一整片換成同一個顏色。', edAuto:'依文字生成', edAutoHint:'會依這週寫的內容挑圖案，每按一次換一種構圖。', edClear:'清空',
+      edDraw:'點或拖曳格子作畫；選油漆桶可以把一整片換成同一個顏色。', edAuto:'依文字生成', edAutoHint:'會依這週寫的內容挑圖案，每按一次換一種構圖。', edFound:'配到的圖案：{names}', edNotFound:'沒有找到對應的圖案，先用抽象圖。可以從下面的「圖案」挑一個貼上。', edClear:'清空',
       edPalette:'顏色', edPen:'畫筆', edFill:'油漆桶', edUndo:'上一步', edBg:'背景圖樣', edMotif:'圖案（點一下貼到中間）',
       zoomIn:'放大格子', zoomOut:'縮小格子', zoomHint:'放大之後，寫過回顧的週會直接顯示那塊磁磚。',
       pt_rings:'同心圓', pt_gradient:'漸層',
@@ -168,7 +168,7 @@
       widgetUnsupported:'This phone cannot add it directly. Long-press an empty spot on your home screen, tap Widgets, and find Life Calendar.', exportShare:'Export backup',
       weekdayNames:'Sunday,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday',
       edTitle:'Week of {range}', edText:'Best thing this week', edPh:'e.g. Talked with an old friend until midnight', edMood:"This week's color (shown when squares are tiny)", edPattern:'Pattern',
-      edDraw:'Tap or drag to draw. Use Fill to recolor a whole area at once.', edAuto:'Generate from text', edAutoHint:'Picks a picture from what you wrote. Each tap tries a new composition.', edClear:'Clear',
+      edDraw:'Tap or drag to draw. Use Fill to recolor a whole area at once.', edAuto:'Generate from text', edAutoHint:'Picks a picture from what you wrote. Each tap tries a new composition.', edFound:'Matched: {names}', edNotFound:'No matching picture, so this is an abstract one. You can pick a picture below and place it.', edClear:'Clear',
       edPalette:'Colors', edPen:'Pen', edFill:'Fill', edUndo:'Undo', edBg:'Backgrounds', edMotif:'Pictures (tap to place in the middle)',
       zoomIn:'Zoom in', zoomOut:'Zoom out', zoomHint:'Zoom in and reviewed weeks show their tiles.',
       pt_rings:'Rings', pt_gradient:'Gradient',
@@ -932,6 +932,7 @@
     };
     $('edTitle').textContent = t('edTitle', {range: `${fmtMD(mon)} – ${fmtMD(addDays(mon, 6))}`});
     $('edText').value = state.ed.text;
+    $('edAutoMsg').textContent = '';
     $('edDelete').hidden = state.ed.isNew;
     $('edDelete').textContent = t('edDelete');
     $('editor').hidden = false;
@@ -1217,7 +1218,12 @@
     $('edAuto').addEventListener('click', () => {
       const ed = state.ed;
       edPush();
-      edSet(T.generate(ed.text.trim() || data.intents[ed.k] || ed.k, ed.autoN++));
+      const src = ed.text.trim() || data.intents[ed.k] || '';
+      edSet(T.generate(src || ed.k, ed.autoN++));
+      const found = src ? T.findMotifs(src) : [];
+      $('edAutoMsg').textContent = found.length
+        ? t('edFound', {names: found.map(m => T.MOTIFS[m][prefs.lang] || T.MOTIFS[m].zh).join(prefs.lang === 'zh' ? '、' : ', ')})
+        : t('edNotFound');
     });
     $('edClear').addEventListener('click', () => { edPush(); edSet(T.blank(0)); });
     let drawing = false;
