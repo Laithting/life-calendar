@@ -220,12 +220,17 @@
     try{
       const parts = new Intl.DateTimeFormat('zh-TW-u-ca-chinese', {year:'numeric', month:'long', day:'numeric'}).formatToParts(d);
       const get = k => (parts.find(p => p.type === k) || {}).value;
-      const yn = get('yearName') || '';
+      let yn = get('yearName') || '';
+      // Android 的 WebView 沒有中文曆法名稱，會回傳「bing-wu」「M09」「M06L」這種格式
+      if (!/[\u4e00-\u9fff]/.test(yn)){
+        const ry = parseInt(get('relatedYear'), 10);
+        yn = ry ? '甲乙丙丁戊己庚辛壬癸'[((ry - 4) % 10 + 10) % 10] + '子丑寅卯辰巳午未申酉戌亥'[((ry - 4) % 12 + 12) % 12] : '';
+      }
       let mo = get('month') || '';
       const day = parseInt(get('day'), 10);
       if (!mo || !day) return '';
-      const num = mo.match(/^(閏)?(\d+)/);
-      if (num) mo = (num[1] || '') + cnMonth(+num[2]) + '月';
+      const num = mo.match(/^(閏)?M?(\d+)(L)?/);
+      if (num) mo = (num[1] || num[3] ? '閏' : '') + cnMonth(+num[2]) + '月';
       return `農曆${withYear && yn ? yn + '年' : ''}${mo}${cnDay(day)}`;
     }catch(e){ return ''; }
   }
@@ -860,7 +865,8 @@
       if (perm.display !== 'granted') return false;
       const [hh, mm] = prefs.remind.time.split(':').map(Number);
       await ln.schedule({notifications: [{
-        id: 1001, title: t('remindEvt'), body: t('remindBody'),
+        // 週提醒差幾分鐘沒關係，不用精準鬧鐘，Android 也就不會跳去「鬧鐘與提醒」設定頁
+        id: 1001, title: t('remindEvt'), body: t('remindBody'), isExactNotification: false,
         schedule: {on: {weekday: prefs.remind.day + 1, hour: hh, minute: mm}, allowWhileIdle: true}
       }]});
       return true;
