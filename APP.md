@@ -30,11 +30,29 @@ npx cap sync
 
 ## 打包 Android 測試版（APK）
 
-需要 Android Studio，而且第一次打開時要跑完設定精靈，把 Android SDK 裝好。
+需要先準備好：
 
-```bash
-npm run build:android
+- **Android Studio**：第一次打開時要跑完設定精靈，把 Android SDK 裝好。
+- **Java 21**：Capacitor 的外掛規定用 Java 21 編譯。Android Studio 內建的是 Java 25，不能直接用，要另外安裝 Microsoft OpenJDK 21（`winget install --id Microsoft.OpenJDK.21 -e`）。
+
+這個專案另外做了兩個設定：
+
+- **Gradle 9.1.0**：`android/gradle/wrapper/gradle-wrapper.properties` 從 Capacitor 預設的 8.14.3 升級。這樣就算 Android Studio 用內建的 Java 25 執行 Gradle，也能透過 toolchain 自動找到 Java 21 來編譯。
+- **`android.overridePathCheck=true`**：寫在 `android/gradle.properties`。專案路徑裡有中文，Android 的建置工具在 Windows 上預設會拒絕建置。
+
+在 PowerShell 打包：
+
+```powershell
+npx cap sync android
+$env:JAVA_HOME = 'C:\Program Files\Microsoft\jdk-21.0.12.101-hotspot'
+$env:ANDROID_HOME = "$env:LOCALAPPDATA\Android\Sdk"
+.\android\gradlew.bat -p android assembleDebug
 ```
+
+注意：
+
+- 這一步要在一般的終端機裡跑，Gradle 需要開本機連線。
+- 第一次建置會自動下載 SDK Platform 36 和其他需要的套件，大約要幾分鐘。
 
 產生的檔案在 `android/app/build/outputs/apk/debug/app-debug.apk`。
 
