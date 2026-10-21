@@ -31,7 +31,7 @@
     },
     mountain: {
       zh: '山', en: 'Mountains', colors: { a: G, b: B, w: W }, alt: [{ a: B, b: P }, { a: P, b: B }],
-      kw: ['爬山', '登山', '健行', '露營', '山', 'hike', 'hiking', 'mountain', 'climb', 'camping'],
+      kw: ['爬山', '登山', '健行', '山', 'hike', 'hiking', 'mountain', 'climb'],
       art: ['....w.......', '...www......', '..awwwa.....', '.aaaaaaa.w..', 'aaaaaaaaawb.', 'aaaaaaaaaabb',
         'aaaaaaaaaaab', 'aaaaaaaaaaaa']
     },
@@ -79,7 +79,7 @@
     },
     music: {
       thin: true, zh: '音符', en: 'Music', colors: { a: P }, alt: [{ a: K }, { a: B }, { a: R }],
-      kw: ['音樂', '歌', '唱', '演唱會', '吉他', '鋼琴', '樂團', 'music', 'song', 'sing', 'concert', 'guitar', 'piano'],
+      kw: ['音樂', '歌', '唱', '演唱會', '樂團', 'music', 'song', 'sing', 'concert'],
       art: ['....aaaaaaa.', '....aaaaaaa.', '....a.....a.', '....a.....a.', '....a.....a.', '....a.....a.',
         '....a.....a.', '..aaa...aaa.', '.aaaa..aaaa.', '.aaaa..aaaa.', '..aa....aa..']
     },
@@ -240,23 +240,24 @@
   const BAYER = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
   const blank = (c) => new Array(N).fill(c || 0);
 
-  function findMotifs(text) {
+  function matchMotifs(text) {
     const s = String(text || '').toLowerCase();
     const hits = [];
     MOTIF_KEYS.forEach(k => {
       let best = null;
       MOTIFS[k].kw.forEach(w => {
-        const en = /^[a-z]+$/.test(w);
+        const en = /^[a-z ]+$/.test(w);
         const i = en ? s.search(new RegExp('\\b' + w)) : s.indexOf(w);
         if (i < 0) return;
         // 越長的詞越具體，優先採用；一樣長就取先出現的
         const len = en ? Math.min(3, Math.ceil(w.length / 3)) : w.length;
-        if (!best || len > best.len || (len === best.len && i < best.i)) best = { i, len };
+        if (!best || len > best.len || (len === best.len && i < best.i)) best = { i, len, word: w };
       });
-      if (best) hits.push([best, k]);
+      if (best) hits.push(Object.assign({ key: k }, best));
     });
-    return hits.sort((a, b) => b[0].len - a[0].len || a[0].i - b[0].i).map(h => h[1]);
+    return hits.sort((a, b) => b.len - a.len || a.i - b.i);
   }
+  const findMotifs = text => matchMotifs(text).map(h => h.key);
   const sceneFor = text => { const s = String(text || '').toLowerCase(); return SCENES.find(sc => sc.kw.some(w => s.includes(w))) || null; };
 
   /* ---------- 背景 ---------- */
@@ -387,14 +388,190 @@
     return art;
   }
 
+  /* ---------- emoji ----------
+   * 關鍵字表來自 emoji-data.js（Unicode CLDR）。用裝置內建的 emoji 字型畫出來，
+   * 縮成 13×13 再換成調色盤的顏色；不需要網路，文字也不會離開裝置。
+   */
+  function matchEmoji(text) {
+    const D = root.LCEmojiData; if (!D) return [];
+    const s = String(text || '').toLowerCase();
+    const best = new Map();
+    const isLetter = c => /[a-z]/.test(c || '');
+    ['zh', 'en'].forEach(lang => (D[lang] || []).forEach(row => {
+      const tts = row[1];
+      const hits = [];
+      for (let j = 2; j < row.length; j++) {
+        const w = row[j];
+        const i = s.indexOf(w);
+        if (i < 0) continue;
+        if (lang === 'en' && (isLetter(s[i - 1]) || isLetter(s[i + w.length]))) continue;
+        const len = lang === 'en' ? Math.min(3, Math.ceil(w.length / 3)) : w.length;
+        hits.push({ i, len, w });
+      }
+      if (!hits.length) return;
+      // 不重疊的詞才加總，例如「早餐吃鬆餅」同時對到 🧇 的「早餐」和「鬆餅」
+      hits.sort((a, b) => b.len - a.len || a.i - b.i);
+      const taken = [];
+      hits.forEach(h => { if (!taken.some(t => h.i < t.i + t.len && t.i < h.i + h.len)) taken.push(h); });
+      let score = taken.reduce((n, h) => n + h.len, 0);
+      if (taken.some(h => tts.includes(h.w))) score += 0.5;
+      const main = taken[0];
+      const cur = best.get(row[0]);
+      if (!cur || score > cur.len) best.set(row[0], { i: Math.min(...taken.map(h => h.i)), len: score, span: main.len, at: main.i, word: main.w, emoji: row[0] });
+    }));
+    const list = [...best.values()].sort((a, b) => b.len - a.len || a.i - b.i);
+    const perWord = {};
+    return list.filter(h => (perWord[h.word] = (perWord[h.word] || 0) + 1) <= 2);
+  }
+
+  // 依文字找出所有候選：手繪圖案和 emoji 一起排，越長的詞越優先，一樣長時手繪圖案優先
+  function candidates(text) {
+    const t = String(text || '').trim();
+    const list = matchMotifs(t).map(h => ({ type: 'motif', key: h.key, i: h.i, len: h.len, word: h.word }));
+    matchEmoji(t).forEach(h => {
+      // 同一個詞已經有手繪圖案就不重複
+      if (list.some(m => m.type === 'motif' && m.i === h.at && m.len === h.span && h.len <= m.len)) return;
+      if (emojiSprite(h.emoji) === null) return;
+      list.push({ type: 'emoji', key: h.emoji, i: h.at, len: h.len, span: h.span, word: h.word });
+    });
+    list.sort((a, b) => b.len - a.len || a.i - b.i || (a.type === 'motif' ? -1 : 1));
+    // 被更長的詞包住的短詞（例如「腳踏車」裡的「車」）就不用了
+    const span = c => c.span || c.len;
+    const kept = list.filter(c => !list.some(o => o !== c && span(o) > span(c) && o.i <= c.i && o.i + span(o) >= c.i + span(c)));
+    return kept.slice(0, 6);
+  }
+  function describe(text, lang) {
+    return candidates(text).map(c => c.type === 'motif' ? (MOTIFS[c.key][lang] || MOTIFS[c.key].zh) : `${c.word} ${c.key}`);
+  }
+
+  const spriteCache = new Map();
+  let tofu = null;
+  function rasterize(ch, P) {
+    const cv = document.createElement('canvas'); cv.width = cv.height = P;
+    const ctx = cv.getContext('2d', { willReadFrequently: true });
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.font = `${Math.round(P * 0.8)}px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji","Twemoji Mozilla",sans-serif`;
+    ctx.fillText(ch, P / 2, P / 2);
+    return ctx.getImageData(0, 0, P, P).data;
+  }
+  // 回傳 13×13 的顏色編號（-1 表示透明）；這台裝置畫不出來就回傳 null
+  function emojiSprite(e) {
+    if (spriteCache.has(e)) return spriteCache.get(e);
+    if (typeof document === 'undefined') return null;
+    const P = 104, Z = 13;
+    let res = null;
+    try {
+      const ch = /️|‍/.test(e) || [...e].length > 1 ? e : e + '️';
+      const d = rasterize(ch, P);
+      if (!tofu) tofu = rasterize('\u{10FFFD}', P);
+      let same = true;
+      for (let i = 3; i < d.length; i += 4) if (d[i] !== tofu[i]) { same = false; break; }
+      let x0 = P, y0 = P, x1 = -1, y1 = -1;
+      for (let y = 0; y < P; y++) for (let x = 0; x < P; x++) if (d[(y * P + x) * 4 + 3] > 24) {
+        if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y;
+      }
+      if (!same && x1 >= 0) {
+        const side = Math.max(x1 - x0 + 1, y1 - y0 + 1);
+        const cx = (x0 + x1 + 1) / 2, cy = (y0 + y1 + 1) / 2;
+        const cell = side / Z;
+        res = new Array(Z * Z).fill(-1);
+        let colored = 0;
+        for (let gy = 0; gy < Z; gy++) for (let gx = 0; gx < Z; gx++) {
+          const sx0 = cx - side / 2 + gx * cell, sy0 = cy - side / 2 + gy * cell;
+          let a = 0, r = 0, g = 0, b = 0, n = 0;
+          for (let y = Math.floor(sy0); y < Math.ceil(sy0 + cell); y++) for (let x = Math.floor(sx0); x < Math.ceil(sx0 + cell); x++) {
+            n++;
+            if (x < 0 || y < 0 || x >= P || y >= P) continue;
+            const o = (y * P + x) * 4, al = d[o + 3];
+            a += al; r += d[o] * al; g += d[o + 1] * al; b += d[o + 2] * al;
+          }
+          if (n && a / (n * 255) > 0.42) {
+            const idx = nearestRGB(r / a, g / a, b / a);
+            res[gy * Z + gx] = idx;
+            if (idx !== K && idx !== W) colored++;
+          }
+        }
+        // 只有黑白、沒有顏色，多半是這台裝置不支援彩色 emoji
+        if (!colored) res = null;
+      }
+    } catch (err) { res = null; }
+    spriteCache.set(e, res);
+    return res;
+  }
+  function nearestRGB(r, g, b) {
+    let best = 0, bd = Infinity;
+    PALETTE.forEach((p, i) => {
+      const [pr, pg, pb] = rgb(p);
+      // 人眼對綠色比較敏感，距離加權
+      const d = 2 * (pr - r) ** 2 + 4 * (pg - g) ** 2 + 3 * (pb - b) ** 2;
+      if (d < bd) { bd = d; best = i; }
+    });
+    return best;
+  }
+
+  function fromEmoji(e, text, n) {
+    const sprite = emojiSprite(e);
+    if (!sprite) return abstract(text, n);
+    const r = rng(hash(text + '#' + n + '#' + e));
+    const Z = 13;
+    const cnt = new Array(10).fill(0);
+    sprite.forEach(v => { if (v >= 0) cnt[v]++; });
+    const used = new Set(cnt.map((c, i) => [c, i]).filter(([c]) => c >= 6).map(([, i]) => i));
+    const scene = sceneFor(text);
+    let bgA, bgB, spark;
+    const okBg = c => !used.has(c);
+    if (scene) {
+      const opts = scene.bg.filter(([x]) => okBg(x));
+      if (opts.length) { [bgA, bgB] = pick(r, opts); spark = pick(r, scene.spark); }
+    }
+    if (bgA == null) {
+      const free = [W, Y, PK, B, G, O, P].filter(okBg);
+      bgA = free.length ? pick(r, free) : (used.has(W) ? B : W);
+      const second = [W, Y, PK, B, G, O, P].filter(c => c !== bgA && okBg(c));
+      bgB = second.length ? pick(r, second) : bgA;
+    }
+    const art = background(r, bgA, bgB, true);
+    const ox = 1 + (r() < 0.5 ? 0 : 1), oy = 1 + (r() < 0.5 ? 0 : 1);
+    const mask = new Array(N).fill(false);
+    sprite.forEach((v, i) => { if (v >= 0) mask[(oy + Math.floor(i / Z)) * S + ox + (i % Z)] = true; });
+    // 貼紙外框：讓圖跟背景分開
+    if (r() < 0.6) {
+      const edge = bgA === W || used.has(W) ? (used.has(K) ? P : K) : W;
+      for (let i = 0; i < N; i++) {
+        if (mask[i]) continue;
+        const x = i % S, y = Math.floor(i / S);
+        const near = [[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => {
+          const xx = x + dx, yy = y + dy;
+          return xx >= 0 && yy >= 0 && xx < S && yy < S && mask[yy * S + xx];
+        });
+        if (near) art[i] = edge;
+      }
+    }
+    sprite.forEach((v, i) => { if (v >= 0) art[(oy + Math.floor(i / Z)) * S + ox + (i % Z)] = v; });
+    // 點綴放在空的角落
+    const sparkPool = [Y, W, PK, O].filter(c => c !== bgA && c !== bgB);
+    const sc = spark != null ? spark : (sparkPool.length ? pick(r, sparkPool) : R);
+    for (let t = 0, placed = 0; t < 40 && placed < 2; t++) {
+      const x = Math.floor(r() * S), y = Math.floor(r() * S);
+      let near = false;
+      for (let dy = -1; dy <= 1 && !near; dy++) for (let dx = -1; dx <= 1; dx++) {
+        const xx = x + dx, yy = y + dy;
+        if (xx >= 0 && yy >= 0 && xx < S && yy < S && (mask[yy * S + xx] || art[yy * S + xx] !== art[y * S + x] && art[yy * S + xx] !== bgB)) { near = true; break; }
+      }
+      if (near) continue;
+      art[y * S + x] = sc; placed++;
+    }
+    return art;
+  }
+
   function generate(text, n) {
     n = n || 0;
     const t = String(text || '').trim();
-    const found = findMotifs(t);
-    if (found.length) {
-      // 第一次用最先出現的關鍵字；之後輪流換成其他找到的圖案，偶爾換成抽象圖
-      const key = found[n % found.length];
-      return fromMotif(key, t, n);
+    const list = candidates(t);
+    if (list.length) {
+      // 第一次用最具體的詞；之後輪流換成其他找到的圖
+      const c = list[n % list.length];
+      return c.type === 'motif' ? fromMotif(c.key, t, n) : fromEmoji(c.key, t, n);
     }
     return abstract(t || String(Math.random()), n);
   }
@@ -492,6 +669,6 @@
 
   root.LCTiles = {
     SIZE: S, PALETTE, NAMES, MOTIFS, MOTIF_KEYS, PATTERN_KEYS: Object.keys(PATTERNS),
-    generate, stamp, motifPreview, pattern, fill, findMotifs, toStr, fromStr, fromLegacy, dominant, nearest, url, blank
+    generate, describe, candidates, stamp, motifPreview, pattern, fill, findMotifs, toStr, fromStr, fromLegacy, dominant, nearest, url, blank
   };
 })(typeof window !== 'undefined' ? window : globalThis);

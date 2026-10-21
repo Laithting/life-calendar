@@ -1220,10 +1220,8 @@
       edPush();
       const src = ed.text.trim() || data.intents[ed.k] || '';
       edSet(T.generate(src || ed.k, ed.autoN++));
-      const found = src ? T.findMotifs(src) : [];
-      $('edAutoMsg').textContent = found.length
-        ? t('edFound', {names: found.map(m => T.MOTIFS[m][prefs.lang] || T.MOTIFS[m].zh).join(prefs.lang === 'zh' ? '、' : ', ')})
-        : t('edNotFound');
+      const found = src ? T.describe(src, prefs.lang) : [];
+      $('edAutoMsg').textContent = found.length ? t('edFound', {names: found.join(prefs.lang === 'zh' ? '、' : ', ')}) : t('edNotFound');
     });
     $('edClear').addEventListener('click', () => { edPush(); edSet(T.blank(0)); });
     let drawing = false;
