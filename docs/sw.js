@@ -1,6 +1,6 @@
 // 一生日歷 · 離線快取
 // 網站本身：先連網拿最新版，連不上就用快取；字型：有快取就直接用。
-const CACHE = 'lc-v2-8';
+const CACHE = 'lc-v2-9';
 const SHELL = [
   './', './index.html', './style.css', './app.js', './tiles.js', './emoji-data.js', './capacitor.js', './manifest.webmanifest',
   './widget.html', './scriptable.js', './privacy.html',

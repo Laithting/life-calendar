@@ -384,6 +384,7 @@ footer{justify-content:center;text-align:center;padding-top:8px}
   .board,.card,.panel,.weekcard{padding:14px;border-radius:14px}
   .hero h2{font-size:1.9rem}
 }
+.btnlink.apk{color:var(--paper);justify-content:center;align-self:flex-start;text-decoration:none}
 
 </style>
 <script>try{var p=JSON.parse(localStorage.getItem("lc.prefs")||"{}");if(p.theme==="light"||p.theme==="dark")document.documentElement.setAttribute("data-theme",p.theme);}catch(e){}</script>
@@ -565,6 +566,10 @@ footer{justify-content:center;text-align:center;padding-top:8px}
       <h3 data-i18n="p_phone">手機</h3>
       <p class="warn" id="iosNote" hidden data-i18n="iosStorage"></p>
       <p class="note" id="installedNote" hidden data-i18n="installed"></p>
+      <div class="stack" id="apkBox">
+        <a class="primary btnlink apk" id="apkLink" href="https://github.com/Laithting/life-calendar/releases/latest/download/life-calendar.apk" rel="noopener" data-i18n="apkBtn">下載 Android App（APK）</a>
+        <p class="note" data-i18n="apkNote"></p>
+      </div>
       <div id="installHelp" class="stack">
         <button type="button" class="primary" id="installBtn" hidden data-i18n="installBtn">加到主畫面</button>
         <p class="desc" data-i18n="installIos"></p>
@@ -1577,6 +1582,7 @@ window.LCEmojiData={"zh":[["♪","八分音符","八分音符","音符"],["♭",
       remindGcal:'加到 Google 日曆', remindIcs:'下載行事曆檔（.ics）', remindOn:'開啟每週提醒', remindOff:'關閉每週提醒',
       remindSet:'已開啟：每{day} {time} 提醒你。', remindNone:'目前沒有開啟提醒。', remindDenied:'沒有通知權限。請到手機的設定裡，允許「一生日歷」傳送通知。',
       remindEvt:'一生日歷：回顧這一週', remindBody:'寫下這週最好的一件事，做出這週的磁磚，再想想下週想好好做的一件事。',
+      apkBtn:'下載 Android App（APK）', apkNote:'Android 手機專用，附桌面小工具和每週提醒。第一次安裝時，手機會要求允許「安裝不明來源的應用程式」。iPhone 請用下面的「加入主畫面」。',
       widgetTitle:'桌面小工具', widgetAdd:'把小工具加到主畫面', widgetHelp:'也可以長按主畫面空白處，點「小工具」，找到「一生日歷」。',
       widgetUnsupported:'這支手機不支援直接加入。請長按主畫面空白處，點「小工具」，找到「一生日歷」。', exportShare:'匯出備份檔',
       weekdayNames:'星期日,星期一,星期二,星期三,星期四,星期五,星期六',
@@ -1653,6 +1659,7 @@ window.LCEmojiData={"zh":[["♪","八分音符","八分音符","音符"],["♭",
       remindGcal:'Add to Google Calendar', remindIcs:'Download calendar file (.ics)', remindOn:'Turn on weekly reminder', remindOff:'Turn off weekly reminder',
       remindSet:'On: every {day} at {time}.', remindNone:'No reminder set.', remindDenied:'Notifications are not allowed. Allow notifications for Life Calendar in your phone settings.',
       remindEvt:'Life Calendar: look back on this week', remindBody:"Write down the best thing this week, make this week's tile, and pick one thing to do well next week.",
+      apkBtn:'Download the Android app (APK)', apkNote:'For Android phones. Includes the home-screen widget and weekly reminders. The first install asks you to allow installing apps from unknown sources. On iPhone, use Add to Home Screen below.',
       widgetTitle:'Home-screen widget', widgetAdd:'Add the widget to your home screen', widgetHelp:'You can also long-press an empty spot on your home screen, tap Widgets, and find Life Calendar.',
       widgetUnsupported:'This phone cannot add it directly. Long-press an empty spot on your home screen, tap Widgets, and find Life Calendar.', exportShare:'Export backup',
       weekdayNames:'Sunday,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday',
@@ -2327,6 +2334,7 @@ window.LCEmojiData={"zh":[["♪","八分音符","八分音符","音符"],["♭",
     $('installHelp').hidden = !web || standalone() || !window.LC_STANDALONE;
     $('iosNote').hidden = !(web && isIOS && !standalone() && window.LC_STANDALONE);
     $('webWidget').hidden = !web;
+    $('apkBox').hidden = !web || standalone();
     $('nativeWidget').hidden = !(isNative && plugin('LifeWidget'));
     const names = t('weekdayNames').split(',');
     $('rDay').innerHTML = names.map((n, i) => `<option value="${i}"${i === prefs.remind.day ? ' selected' : ''}>${n}</option>`).join('');

@@ -19,7 +19,7 @@ Android 測試版 APK：[下載最新版](https://github.com/Laithting/life-cale
 - 手機桌面小工具：iPhone 用 Scriptable，Android 用 KWGT（設定說明在 `widget.html`）
 - 每週提醒：網站可以加到 Google 日曆或下載 .ics；App 用手機通知
 - 鍵盤操作：格子可以用方向鍵移動、Enter 打開
-- Android App（`android/`），附原生桌面小工具，打包與上架說明見 [APP.md](APP.md)
+- Android App（`android/`），附原生桌面小工具
 
 所有資料只存在瀏覽器的 localStorage（App 版另外存一份在手機的原生儲存空間），不會上傳。隱私權政策：`docs/privacy.html`。
 

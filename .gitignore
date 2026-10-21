@@ -4,3 +4,5 @@ node_modules/
 *.jks
 *.keystore
 keystore.properties
+# 個人的打包與上架筆記，只留在本機
+APP.md
