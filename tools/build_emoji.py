@@ -22,7 +22,7 @@ OUT = os.path.join(ROOT, 'docs', 'emoji-data.js')
 STOP = {
     'zh': set('臉 人 手 男 女 男人 女人 男性 女性 人物 符號 標誌 表情 臉部 物件 東西 動物 食物 飲料 樂器 交通工具 地點 鐵 '
               '無法決定 猶豫不決 星巴克 其他 圖示 物品 身體 部位 顏色 形狀 方向 箭頭 時間 天氣 自然 植物 活動 '
-              '一 二 三 四 五 六 七 八 九 十 大 小 上 下 左 右 中 是 不 好 有 的 一次 新手 第一 開始 結束 完成'.split()),
+              '一 二 三 四 五 六 七 八 九 十 大 小 上 下 左 右 中 是 不 好 有 的 一次 新手 第一 開始 結束 完成 完了 收到 好的 可以 沒有 今天 明天 昨天'.split()),
     'en': set('face person man woman symbol sign object animal food drink thing other icon body part color shape '
               'direction arrow time weather nature plant activity the and with'.split()),
 }

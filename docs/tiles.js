@@ -217,6 +217,10 @@
 
   // 情境：影響背景配色
   const SCENES = [
+    { kw: ['生日', '派對', '慶祝', '過年', '新年', '聖誕', '恭喜', 'party', 'birthday', 'celebrate'], bg: [[PK, Y], [Y, R], [R, Y]], spark: [Y, W] },
+    { kw: ['約會', '告白', '情人節', '結婚', '求婚', 'date', 'wedding'], bg: [[PK, W], [R, PK], [W, PK]], spark: [R, W] },
+    { kw: ['難過', '哭', '失落', '心累', '壓力', '崩潰', 'sad', 'cry', 'stress'], bg: [[B, P], [P, B]], spark: [W, B] },
+    { kw: ['上班', '加班', '會議', '開會', '報告', '考試', '讀書', 'work', 'meeting', 'exam', 'study'], bg: [[W, B], [B, W], [Y, W]], spark: [B, Y] },
     { kw: ['夜', '晚', '睡', '星空', '熬夜', 'night', 'sleep'], bg: [[B, P], [P, B], [K, B]], spark: [Y, W] },
     { kw: ['早', '日出', '晨', 'sunrise', 'morning'], bg: [[Y, O], [PK, Y], [O, Y]], spark: [W, R] },
     { kw: ['雨', '颱風', 'rain', 'storm'], bg: [[B, P], [K, B]], spark: [W, B] },
@@ -388,36 +392,188 @@
     return art;
   }
 
+  /* ---------- 日記常見情境 ----------
+   * 一般 emoji 字典對抽象的事（加班、想通、吵架）幫不上忙，這裡手動對應，而且優先於字典。
+   * 挑的都是縮到 13×13 還認得出來的 emoji。
+   */
+  const DIARY = [
+    // 工作與學習
+    ['💼', '上班', '工作', '加班', '公司', '職場', 'work', 'office', 'overtime'],
+    ['📊', '報告', '簡報', '會議', '開會', '提案', '業績', 'report', 'presentation', 'meeting'],
+    ['💻', '寫程式', '程式', '電腦', 'coding', 'programming', 'laptop'],
+    ['👔', '面試', '西裝', 'interview'],
+    ['📈', '升職', '加薪', '進步', '成長', 'promotion', 'raise', 'progress'],
+    ['🚪', '離職', '辭職', '下班', 'quit', 'resign'],
+    ['🎓', '畢業', '學位', '論文', 'graduation', 'graduate', 'thesis'],
+    ['🎒', '開學', '上學', '上課', 'school', 'class'],
+    ['📝', '考試', '作業', '筆記', '測驗', '複習', 'exam', 'test', 'homework', 'notes'],
+    ['📚', '讀書', '唸書', '圖書館', '買書', 'study', 'library'],
+    ['📖', '閱讀', '看書', '小說', 'reading', 'novel'],
+    ['✏️', '寫作', '文章', '投稿', 'writing', 'essay'],
+    ['📔', '日記', '手帳', 'journal', 'diary'],
+    ['🗓️', '計畫', '規劃', '行程', '安排', 'plan', 'schedule'],
+    ['🎯', '目標', '專注', 'focus', 'goal'],
+    ['✅', '完成', '搞定', '做完', '達成', '交出', 'done', 'finished', 'completed'],
+    ['💡', '想通', '靈感', '點子', '想法', '領悟', '學到', 'idea', 'inspiration', 'insight', 'learned'],
+    ['💬', '溝通', '聊天', '討論', '對話', '談心', '聊', 'talk', 'chat', 'discussion'],
+    ['📞', '電話', '打給', '視訊', 'phone call', 'video call'],
+    ['📧', '郵件', '寄信', 'email', 'mail'],
+    // 心情與身體
+    ['😄', '開心', '快樂', '高興', '好玩', '有趣', 'happy', 'fun', 'glad'],
+    ['🥰', '幸福', '甜蜜', '被愛', 'sweet', 'loved'],
+    ['🥹', '感動', '感激', '鼻酸', 'moved', 'touched'],
+    ['🙏', '感謝', '謝謝', '感恩', '祈禱', 'thanks', 'grateful', 'pray'],
+    ['😢', '難過', '傷心', '哭', '失落', '委屈', 'sad', 'cry', 'upset'],
+    ['😠', '生氣', '憤怒', '火大', '不爽', 'angry', 'mad'],
+    ['😰', '焦慮', '緊張', '擔心', '不安', '害怕', 'anxious', 'nervous', 'worried', 'scared'],
+    ['😮‍💨', '壓力', '好累', '疲憊', '崩潰', '心累', 'stress', 'exhausted'],
+    ['😴', '睡覺', '睡懶覺', '補眠', '賴床', '午睡', '睡飽', 'sleep', 'nap'],
+    ['🌙', '失眠', '熬夜', '深夜', '半夜', '晚安', 'insomnia', 'late night'],
+    ['🤒', '感冒', '發燒', '生病', '不舒服', '頭痛', 'sick', 'fever', 'headache'],
+    ['💊', '吃藥', '藥', 'medicine'],
+    ['🏥', '醫院', '看醫生', '急診', '住院', 'hospital', 'doctor'],
+    ['🦷', '牙醫', '看牙', '牙痛', 'dentist'],
+    ['💉', '打針', '疫苗', '抽血', 'vaccine'],
+    ['🧘', '冥想', '瑜伽', '放鬆', '靜心', 'meditate', 'meditation', 'yoga', 'relax'],
+    ['🛋️', '耍廢', '休息', '在家', '宅', '發呆', 'rest', 'lazy', 'chill'],
+    ['🤔', '思考', '反省', '煩惱', '猶豫', '迷惘', 'think', 'reflect'],
+    ['😂', '大笑', '笑死', '爆笑', 'laugh', 'lol'],
+    ['💪', '努力', '加油', '堅持', '健身', '重訓', 'effort', 'gym', 'workout'],
+    ['🏃', '跑步', '慢跑', '馬拉松', 'run', 'running', 'jog', 'marathon'],
+    ['🚶', '散步', '走路', '走走', 'walk', 'stroll'],
+    ['🏊', '游泳', 'swim', 'swimming'],
+    ['🚴', '騎車', '騎腳踏車', '騎單車', 'cycling', 'ride'],
+    // 人
+    ['👨‍👩‍👧', '家人', '家庭', '全家', 'family'],
+    ['👩', '媽媽', '母親', '老媽', 'mom', 'mother'],
+    ['👨', '爸爸', '父親', '老爸', 'dad', 'father'],
+    ['👵', '奶奶', '外婆', '阿嬤', 'grandma'],
+    ['👴', '爺爺', '外公', '阿公', 'grandpa'],
+    ['👶', '寶寶', '嬰兒', '小孩', '孩子', '女兒', '兒子', 'baby', 'kid'],
+    ['🧑‍🤝‍🧑', '朋友', '好友', '同學', '同事', '聚會', '老朋友', 'friends', 'classmate', 'coworker'],
+    ['💑', '約會', '男友', '女友', '男朋友', '女朋友', '另一半', '伴侶', 'date', 'boyfriend', 'girlfriend', 'partner'],
+    ['💌', '告白', '情書', '寫信', 'confess', 'love letter'],
+    ['💔', '分手', '失戀', '心碎', 'breakup', 'heartbreak'],
+    ['💍', '結婚', '求婚', '婚禮', '訂婚', 'wedding', 'propose', 'marry'],
+    ['😤', '吵架', '爭吵', '衝突', '冷戰', 'argue', 'fight'],
+    ['🫂', '擁抱', '抱抱', '安慰', '陪伴', 'hug', 'comfort'],
+    ['🙇', '道歉', '對不起', 'apologize', 'sorry'],
+    // 吃喝
+    ['🍳', '下廚', '做飯', '煮飯', '早餐', '煎蛋', 'cook', 'breakfast'],
+    ['🍱', '便當', '午餐', 'lunch', 'bento'],
+    ['🍽️', '晚餐', '聚餐', '吃飯', '大餐', '餐廳', 'dinner', 'meal', 'restaurant'],
+    ['🍲', '火鍋', '湯', '麻辣鍋', 'hotpot', 'soup'],
+    ['🍜', '拉麵', '麵', '牛肉麵', 'ramen', 'noodles'],
+    ['🍣', '壽司', '日料', 'sushi'],
+    ['🍖', '燒肉', '燒烤', '烤肉', 'bbq', 'barbecue'],
+    ['🍰', '甜點', '下午茶', 'dessert'],
+    ['🧋', '珍奶', '手搖', '飲料', '奶茶', 'boba', 'bubble tea'],
+    ['🍺', '喝酒', '啤酒', '乾杯', '小酌', 'beer', 'drinks', 'cheers'],
+    ['🍷', '紅酒', '葡萄酒', 'wine'],
+    ['🍔', '漢堡', '速食', 'burger', 'fast food'],
+    ['🍎', '水果', '蘋果', 'fruit'],
+    ['🥗', '沙拉', '減肥', '節食', '吃清淡', 'salad', 'diet'],
+    // 生活
+    ['🧹', '打掃', '掃地', '大掃除', '整理房間', 'clean', 'cleaning', 'tidy'],
+    ['🧺', '洗衣服', '曬衣服', '洗衣', 'laundry'],
+    ['📦', '搬家', '包裹', '網購', '開箱', 'move', 'package', 'delivery', 'unboxing'],
+    ['🛍️', '逛街', '購物', '買東西', '血拼', 'shopping'],
+    ['👕', '買衣服', '衣服', '新衣', 'clothes'],
+    ['💇', '剪頭髮', '染頭髮', '髮型', '燙頭髮', 'haircut'],
+    ['💰', '存錢', '薪水', '領薪', '發薪', '賺錢', '理財', '投資', 'money', 'salary', 'savings'],
+    ['💸', '花錢', '破財', '亂買', '超支', 'spend', 'expensive'],
+    ['🏠', '回家', '想家', '老家', 'home', 'homesick'],
+    ['🔑', '鑰匙', '新家', '租屋', '房子', 'key', 'new home'],
+    ['🪴', '盆栽', '種花', '園藝', '澆水', 'plant', 'garden'],
+    ['🐾', '寵物', '毛孩', 'pet'],
+    ['🐕', '狗', '遛狗', 'dog'],
+    ['🐈', '貓', 'cat'],
+    // 休閒
+    ['📺', '追劇', '看劇', '影集', '電視', '韓劇', 'tv', 'series', 'drama'],
+    ['🎬', '電影', '看電影', '電影院', 'movie', 'cinema'],
+    ['🎮', '打電動', '遊戲', '電玩', 'game', 'gaming'],
+    ['🎤', '唱歌', 'ktv', '演唱會', 'karaoke', 'concert', 'sing'],
+    ['🎧', '聽音樂', '耳機', 'podcast', 'music'],
+    ['🎨', '畫畫', '繪畫', '畫圖', '藝術', 'draw', 'painting', 'art'],
+    ['📷', '拍照', '攝影', '照片', 'photo', 'photography'],
+    ['🖼️', '看展', '展覽', '美術館', 'exhibition', 'gallery'],
+    ['🎹', '鋼琴', 'piano'],
+    ['🎸', '吉他', 'guitar'],
+    ['🧩', '拼圖', '桌遊', 'puzzle', 'board game'],
+    // 出門
+    ['✈️', '飛機', '出國', '機場', 'flight', 'abroad', 'airport'],
+    ['🧳', '出差', '行李', '旅行', '旅遊', 'trip', 'travel', 'luggage'],
+    ['🏖️', '海邊', '沙灘', '度假', '放假', '假期', '連假', 'beach', 'vacation', 'holiday'],
+    ['⛺', '露營', 'camping'],
+    ['🚗', '開車', '兜風', '塞車', '自駕', 'drive', 'traffic'],
+    ['🚌', '公車', '搭車', 'bus'],
+    ['🚇', '捷運', '地鐵', '通勤', 'mrt', 'metro', 'subway', 'commute'],
+    ['🚄', '高鐵', '火車', 'train'],
+    ['🗺️', '探險', '地圖', '迷路', '景點', 'explore', 'map'],
+    ['🏛️', '博物館', '古蹟', 'museum'],
+    ['🎡', '遊樂園', '摩天輪', 'amusement park'],
+    ['☕', '咖啡', '咖啡廳', 'cafe', 'coffee'],
+    ['🍵', '喝茶', '泡茶', 'tea'],
+    // 天氣
+    ['☀️', '晴天', '天氣好', '好天氣', '大太陽', 'sunny'],
+    ['☔', '下雨', '雨天', '淋雨', 'rain', 'rainy'],
+    ['🌀', '颱風', 'typhoon'],
+    ['❄️', '下雪', '寒流', '好冷', 'snow'],
+    ['🌈', '彩虹', 'rainbow'],
+    ['🔥', '好熱', '熱情', '燃燒', 'hot'],
+    // 節日與里程碑
+    ['🧧', '過年', '新年', '春節', '紅包', '除夕', 'new year', 'lunar new year'],
+    ['🥮', '中秋', '月餅', 'mid-autumn'],
+    ['🎄', '聖誕', '聖誕節', 'christmas'],
+    ['💘', '情人節', 'valentine'],
+    ['🎂', '生日', '慶生', 'birthday'],
+    ['🎉', '慶祝', '派對', '恭喜', '成功', '錄取', 'party', 'celebrate', 'congrats'],
+    ['🎁', '禮物', '驚喜', 'gift', 'present', 'surprise'],
+    ['💝', '紀念日', '週年', 'anniversary'],
+    ['🏆', '得獎', '冠軍', '比賽', '贏了', 'award', 'champion', 'win'],
+    ['⭐', '夢想', '希望', '願望', 'dream', 'hope', 'wish'],
+    ['🌱', '新開始', '重新開始', '改變', '第一次', 'fresh start', 'growth', 'change', 'first time']
+  ];
+
+  // 跟字典同樣的格式：[emoji, 正式名稱, 關鍵字...]
+  const DIARY_ROWS = DIARY.map(r => [r[0], r[1]].concat(r.slice(1)));
+
   /* ---------- emoji ----------
    * 關鍵字表來自 emoji-data.js（Unicode CLDR）。用裝置內建的 emoji 字型畫出來，
    * 縮成 13×13 再換成調色盤的顏色；不需要網路，文字也不會離開裝置。
    */
   function matchEmoji(text) {
-    const D = root.LCEmojiData; if (!D) return [];
+    const D = root.LCEmojiData || {};
     const s = String(text || '').toLowerCase();
     const best = new Map();
     const isLetter = c => /[a-z]/.test(c || '');
-    ['zh', 'en'].forEach(lang => (D[lang] || []).forEach(row => {
+    // 日記情境表放最前面並加分，所以「加班」會先用 💼 而不是字典裡比較冷門的圖
+    const sources = [['diary', DIARY_ROWS], ['zh', D.zh || []], ['en', D.en || []]];
+    sources.forEach(([lang, rows]) => rows.forEach(row => {
       const tts = row[1];
       const hits = [];
       for (let j = 2; j < row.length; j++) {
         const w = row[j];
         const i = s.indexOf(w);
         if (i < 0) continue;
-        if (lang === 'en' && (isLetter(s[i - 1]) || isLetter(s[i + w.length]))) continue;
-        const len = lang === 'en' ? Math.min(3, Math.ceil(w.length / 3)) : w.length;
-        hits.push({ i, len, w });
+        const en = /^[a-z][a-z \-]*$/.test(w);
+        if (en && (isLetter(s[i - 1]) || isLetter(s[i + w.length]))) continue;
+        let len = en ? Math.min(3, Math.ceil(w.length / 3)) : w.length;
+        if (lang === 'diary') len += 0.6;
+        // 字典裡不是正式名稱的詞比較容易誤判，稍微降低
+        else if (w !== tts) len -= 0.3;
+        hits.push({ i, len, w, raw: w.length });
       }
       if (!hits.length) return;
       // 不重疊的詞才加總，例如「早餐吃鬆餅」同時對到 🧇 的「早餐」和「鬆餅」
       hits.sort((a, b) => b.len - a.len || a.i - b.i);
       const taken = [];
-      hits.forEach(h => { if (!taken.some(t => h.i < t.i + t.len && t.i < h.i + h.len)) taken.push(h); });
+      hits.forEach(h => { if (!taken.some(t => h.i < t.i + t.raw && t.i < h.i + h.raw)) taken.push(h); });
       let score = taken.reduce((n, h) => n + h.len, 0);
       if (taken.some(h => tts.includes(h.w))) score += 0.5;
       const main = taken[0];
       const cur = best.get(row[0]);
-      if (!cur || score > cur.len) best.set(row[0], { i: Math.min(...taken.map(h => h.i)), len: score, span: main.len, at: main.i, word: main.w, emoji: row[0] });
+      if (!cur || score > cur.len) best.set(row[0], { i: Math.min(...taken.map(h => h.i)), len: score, span: main.raw, at: main.i, word: main.w, emoji: row[0] });
     }));
     const list = [...best.values()].sort((a, b) => b.len - a.len || a.i - b.i);
     const perWord = {};
@@ -427,10 +583,11 @@
   // 依文字找出所有候選：手繪圖案和 emoji 一起排，越長的詞越優先，一樣長時手繪圖案優先
   function candidates(text) {
     const t = String(text || '').trim();
-    const list = matchMotifs(t).map(h => ({ type: 'motif', key: h.key, i: h.i, len: h.len, word: h.word }));
+    // 手繪圖案跟日記情境表一樣是精選過的，同樣加分
+    const list = matchMotifs(t).map(h => ({ type: 'motif', key: h.key, i: h.i, len: h.len + 0.6, word: h.word }));
     matchEmoji(t).forEach(h => {
       // 同一個詞已經有手繪圖案就不重複
-      if (list.some(m => m.type === 'motif' && m.i === h.at && m.len === h.span && h.len <= m.len)) return;
+      if (list.some(m => m.type === 'motif' && m.i === h.at && m.word.length === h.span)) return;
       if (emojiSprite(h.emoji) === null) return;
       list.push({ type: 'emoji', key: h.emoji, i: h.at, len: h.len, span: h.span, word: h.word });
     });
