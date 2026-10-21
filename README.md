@@ -4,6 +4,8 @@
 
 網站：https://laithting.github.io/life-calendar/
 
+Android 測試版 APK：[下載最新版](https://github.com/Laithting/life-calendar/releases/latest)
+
 ## 功能
 
 - 一生的格子，可以切換週、月、年、今年 365 天
